@@ -27,7 +27,7 @@ void telem_data_init() {
   }
 }
 
-uint16_t telem_data_get_value(uint16_t telemetry_data_value_id) {
+uint32_t telem_data_get_value(uint16_t telemetry_data_value_id) {
   switch(telemetry_data_value_id) {
     case TELEM_DATA_VFAS:
       switch(EEPROM.read(EEPROM_ADDR_MAP_TELEM_DATA_VFAS)) {
@@ -132,7 +132,10 @@ uint16_t telem_data_get_value(uint16_t telemetry_data_value_id) {
     case TELEM_DATA_T2:
       switch(EEPROM.read(EEPROM_ADDR_MAP_TELEM_DATA_T2)) {
         case EEPROM_VALUE_MAP_DATA_T2_BATTERY_REMAINING:
-          return mav.battery_remaining;
+            uint16_t limited_battery_remaining;
+            limited_battery_remaining = min(max(0, mav.battery_remaining), 99);
+            limited_battery_remaining = limited_battery_remaining + 100 * (((mav.base_mode & 0x80) > 7) & 0x01);
+            return limited_battery_remaining;
           break;
         case EEPROM_VALUE_MAP_DATA_T2_MISSION_CURRENT_SEQ:
           return mav.mission_current_seq;
