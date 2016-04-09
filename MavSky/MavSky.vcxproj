@@ -44,7 +44,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>c:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3;C:\Users\Andrew\Documents\Arduino\ArduinoProjectRepositories\mavsky\MavSky;c:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Adafruit_NeoPixel;c:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Adafruit_NeoPixel\utility;c:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\EEPROM;c:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\EEPROM\utility;C:\Users\Andrew\Documents\Arduino\ArduinoProjectRepositories\mavsky\libraries\GCS_MAVLink;C:\Users\Andrew\Documents\Arduino\ArduinoProjectRepositories\mavsky\libraries\GCS_MAVLink\utility;c:\Program Files (x86)\Arduino\libraries;c:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries;C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\mranj5s4.jr0\Micro Platforms\default\debuggers;C:\Users\Andrew\Documents\Arduino\ArduinoProjectRepositories\mavsky\libraries;c:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3;c:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\Adafruit_NeoPixel;c:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\EEPROM;C:\Users\Andrew\Documents\Arduino\ArduinoProjectRepositories\mavsky\libraries\GCS_MAVLink;c:\Program Files (x86)\Arduino\libraries;c:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries;C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\mranj5s4.jr0\Micro Platforms\default\debuggers;C:\Users\Andrew\Documents\Arduino\ArduinoProjectRepositories\mavsky\libraries;c:\Program Files (x86)\Arduino\hardware\tools\avr/avr/include/;c:\Program Files (x86)\Arduino\hardware\tools\avr//avr/include/avr/;c:\Program Files (x86)\Arduino\hardware\tools\avr/lib\gcc\avr\4.8.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>c:\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3;C:\Users\Andrew\Documents\Arduino\ArduinoProjectRepositories\mavsky\MavSky;c:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\EEPROM;c:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\EEPROM\utility;C:\Users\Andrew\Documents\Arduino\ArduinoProjectRepositories\mavsky\libraries\GCS_MAVLink;C:\Users\Andrew\Documents\Arduino\ArduinoProjectRepositories\mavsky\libraries\GCS_MAVLink\utility;c:\Program Files (x86)\Arduino\libraries;c:\Program Files (x86)\Arduino\hardware\teensy\avr\libraries;C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\mranj5s4.jr0\Micro Platforms\default\debuggers;C:\Users\Andrew\Documents\Arduino\ArduinoProjectRepositories\mavsky\libraries;c:\Program Files (x86)\Arduino\hardware\tools\avr/avr/include/;c:\Program Files (x86)\Arduino\hardware\tools\avr//avr/include/avr/;c:\Program Files (x86)\Arduino\hardware\tools\avr/lib\gcc\avr\4.8.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>C:\Users\Andrew\Documents\Arduino\ArduinoProjectRepositories\mavsky\MavSky\Visual Micro\.MavSky.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <PreprocessorDefinitions>__MK20DX256__;TEENSYDUINO=124;ARDUINO=165;F_CPU=96000000;ARDUINO_ARCH_AVR;USB_SERIAL;LAYOUT_US_ENGLISH;__cplusplus;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -103,6 +103,9 @@
     <ClInclude Include="MavSky.h">
       <FileType>CppCode</FileType>
     </ClInclude>
+    <ClInclude Include="OctoWS2811.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
     <ClInclude Include="Visual Micro\.MavSky.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +118,7 @@
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MavConsole.cpp" />
     <ClCompile Include="MavLinkData.cpp" />
+    <ClCompile Include="OctoWS2811.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -51,6 +51,9 @@
     <ClInclude Include="MavSky.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OctoWS2811.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataBroker.cpp">
@@ -78,6 +81,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MavLinkData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OctoWS2811.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

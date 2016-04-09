@@ -103,4 +103,6 @@ extern "C" void __cxa_pure_virtual() {;}
 #include <MavLinkData.cpp>
 #include <MavLinkData.h>
 #include <MavSky.h>
+#include <OctoWS2811.cpp>
+#include <OctoWS2811.h>
 #endif
