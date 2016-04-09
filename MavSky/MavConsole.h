@@ -24,6 +24,8 @@ class MavConsole {
   char cmd_buffer[128];
   int cmd_index = 0;
   usb_serial_class serial;
+  uint8_t led_data_mode = 0;
+  
   public:
     MavConsole(usb_serial_class port);
     ~MavConsole();
@@ -36,10 +38,15 @@ class MavConsole {
     void do_map_dump();
     void do_map(char* p);
     void do_frsky();
+    void do_ldump();
     void do_factory();
+    void do_led_map();
     void do_command(char *cmd_buffer);
+    uint8_t hex2dec_char(char hex_char);
+    uint32_t hex2dec_string(char *hex_string, uint8_t len);
+    void process_led_data_line(char *cmd_buffer);
     void check_for_console_command();
-
+    uint8_t atoh(uint8_t c);
 };
 
 #endif

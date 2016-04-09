@@ -1,5 +1,6 @@
 --
 --  Author: Scott Simpson
+--  Version 2.1.16a
 --
 -- 	This program is free software: you can redistribute it and/or modify
 --  it under the terms of the GNU General Public License as published by
@@ -13,12 +14,11 @@
 --
 --  A copy of the GNU General Public License is available at <http://www.gnu.org/licenses/>.
 --    
-
+-------------------------------------------------------------------------------------------------------------------------------------
+--
 local debugLabelWidth = 90
 local debugRowHeight = 7
 local debugColWidth = 106
-
-initialize()
 
 local function printFrSkyData(col, row, label, name)
     local val = getValue(name)
@@ -61,13 +61,14 @@ local function printGpsData(col, row, label, name)
     end
 end
 
+local function init()
+end
+
 local function background() 
 end
 
 local function run(event)
 	lcd.clear()
-
-    checkForExtensionMessage()
     
 	printExtensionData(1, 1, "sequence", "sequence")
 	printExtensionData(1, 2, "cog", "cog")
@@ -81,9 +82,10 @@ local function run(event)
 	printExtensionData(2, 1, "ranger_dist", "ranger_dist")
 	printExtensionData(2, 2, "batt_remain", "batt_remain")	   
 	printExtensionData(2, 3, "armed_distance", "armed_distance")
-    printExtensionData(2, 4, "armed_bearing", "armed_bearing")	  
-    printExtensionData(2, 5, "mav_consumed", "mav_consumed")
-    printExtensionData(2, 6, "calc_consumed", "calc_consumed")
+  printExtensionData(2, 4, "armed_bearing", "armed_bearing")	  
+  printExtensionData(2, 5, "mav_consumed", "mav_consumed")
+  printExtensionData(2, 6, "calc_consumed", "calc_consumed")  
+  printExtensionData(2, 7, "dist_travelled", "dist_travelled")
 end
 
-return {run=run}
+return {init=init, run=run, background=background}

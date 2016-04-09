@@ -20,13 +20,14 @@ extern void frsky_send_text_message(char *msg);
 extern Logger *logger;
 extern MavConsole *console;
 
-#define EXPIRY_MILLIS_MAVLINK_MSG_ID_HEARTBEAT   3000
-#define EXPIRY_MILLIS_MAVLINK_MSG_ID_SYS_STATUS  3000
-#define EXPIRY_MILLIS_MAVLINK_MSG_ID_GPS_RAW_INT 3000
-#define EXPIRY_MILLIS_MAVLINK_MSG_ID_VFR_HUD     3000
-#define EXPIRY_MILLIS_MAVLINK_MSG_ID_RAW_IMU     3000
-#define EXPIRY_MILLIS_MAVLINK_MSG_ID_ATTITUDE    3000
-#define EXPIRY_MILLIS_MAVLINK_MSG_ID_RANGEFINDER 3000
+#define EXPIRY_MILLIS_MAVLINK_MSG_ID_HEARTBEAT       3000
+#define EXPIRY_MILLIS_MAVLINK_MSG_ID_SYS_STATUS      3000
+#define EXPIRY_MILLIS_MAVLINK_MSG_ID_GPS_RAW_INT     3000
+#define EXPIRY_MILLIS_MAVLINK_MSG_ID_VFR_HUD         3000
+#define EXPIRY_MILLIS_MAVLINK_MSG_ID_RAW_IMU         3000
+#define EXPIRY_MILLIS_MAVLINK_MSG_ID_ATTITUDE        3000
+#define EXPIRY_MILLIS_MAVLINK_MSG_ID_RANGEFINDER     3000
+#define EXPIRY_MILLIS_MAVLINK_MSG_ID_RC_CHANNELS_RAW 3000
 
 #define STATUS_TEXT_MAX             128
 #define START_MAVLINK_PACKETS       1
@@ -122,12 +123,29 @@ int MavLinkData::mavlink_rangefinder_data_valid() {
   }
 }
 
+int MavLinkData::mavlink_rc_channels_raw_data_valid() {
+  if(logger->get_timestamp_age(Logger::TIMESTAMP_MAVLINK_MSG_ID_RC_CHANNELS_RAW) < EXPIRY_MILLIS_MAVLINK_MSG_ID_RC_CHANNELS_RAW) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
 uint16_t MavLinkData::calc_mah_consumed() {
   return tenth_amp_per_millisecond_consumed / 36000L;
 }
 
 void MavLinkData::process_1000_millisecond() {
-  calced_cog = round(get_bearing_to_coordinates_int(last_process_1000_gps_latitude, last_process_1000_gps_longitude, gps_latitude, gps_longitude));  
+  uint8_t armed_bit;
+  
+
+  armed_bit = (base_mode >> 7) & 1;
+  if(armed_bit) {
+    if(gps_speed > 50) {
+      calced_cog = round(get_bearing_to_coordinates_int(last_process_1000_gps_latitude, last_process_1000_gps_longitude, gps_latitude, gps_longitude)); 
+    }
+    calced_distance_travelled += gps_speed;  
+  }         
   last_process_1000_gps_latitude = gps_latitude;
   last_process_1000_gps_longitude = gps_longitude;
 }
@@ -201,16 +219,19 @@ void MavLinkData::start_mavlink_packet_type(mavlink_message_t* msg_ptr, uint8_t 
 void MavLinkData::start_mavlink_if_stopped(mavlink_message_t* msg_ptr) {
   static uint32_t initializing_timeout = 0;
 
-  if(!mavlink_heartbeat_data_valid()) {
-    if(millis() > initializing_timeout) {
-      start_mavlink_packet_type(msg_ptr, MAV_DATA_STREAM_RAW_SENSORS, 2);
+  if(millis() > initializing_timeout) {
+    if(!mavlink_heartbeat_data_valid()) {
+      start_mavlink_packet_type(msg_ptr, MAV_DATA_STREAM_RAW_SENSORS, 2);   
       start_mavlink_packet_type(msg_ptr, MAV_DATA_STREAM_EXTENDED_STATUS, 3);
       start_mavlink_packet_type(msg_ptr, MAV_DATA_STREAM_RAW_CONTROLLER, 0);
-      start_mavlink_packet_type(msg_ptr, MAV_DATA_STREAM_POSITION, 3);
-      start_mavlink_packet_type(msg_ptr, MAV_DATA_STREAM_EXTRA1, 5);
-      start_mavlink_packet_type(msg_ptr, MAV_DATA_STREAM_EXTRA2, 2);
+      start_mavlink_packet_type(msg_ptr, MAV_DATA_STREAM_POSITION, 3);  
+      start_mavlink_packet_type(msg_ptr, MAV_DATA_STREAM_EXTRA1, 5);  
+      start_mavlink_packet_type(msg_ptr, MAV_DATA_STREAM_EXTRA2, 2); 
       start_mavlink_packet_type(msg_ptr, MAV_DATA_STREAM_EXTRA3, 3);
-      initializing_timeout = millis() + 5000L;                               // wait before trying to initialize again
+      initializing_timeout = millis() + 1000L;                          
+    } else if(!mavlink_rc_channels_raw_data_valid()) {     
+      start_mavlink_packet_type(msg_ptr, MAV_DATA_STREAM_RC_CHANNELS, 3); 
+      initializing_timeout = millis() + 1000L;                    
     }
   }
 }
@@ -270,7 +291,6 @@ void MavLinkData::process_mavlink_packets() {
   
         case MAVLINK_MSG_ID_GPS_RAW_INT:     
           logger->add_timestamp(Logger::TIMESTAMP_MAVLINK_MSG_ID_GPS_RAW_INT);
-          logger->debug_print(Logger::LOG_MAV_GPS, (char *)"MAVLINK_MSG_ID_GPS_RAW_INT: fixtype: %d, visiblesats: %d, gpsspeed: %f, alt: %d", mavlink_msg_gps_raw_int_get_fix_type, mavlink_msg_gps_raw_int_get_satellites_visible, mavlink_msg_gps_raw_int_get_vel(&msg), mavlink_msg_gps_raw_int_get_alt(&msg));
           gps_fixtype = mavlink_msg_gps_raw_int_get_fix_type(&msg);                              // 0 = No GPS, 1 =No Fix, 2 = 2D Fix, 3 = 3D Fix
           gps_satellites_visible =  mavlink_msg_gps_raw_int_get_satellites_visible(&msg);      
           gps_hdop = mavlink_msg_gps_raw_int_get_eph(&msg);                                    // hdop * 100
@@ -279,6 +299,7 @@ void MavLinkData::process_mavlink_packets() {
           gps_altitude = mavlink_msg_gps_raw_int_get_alt(&msg);                                // 1m =1000
           gps_speed = mavlink_msg_gps_raw_int_get_vel(&msg);                                   // 100 = 1m/s
           mav_cog = mavlink_msg_gps_raw_int_get_cog(&msg);
+          logger->debug_print(Logger::LOG_MAV_GPS, (char *)"MAVLINK_MSG_ID_GPS_RAW_INT: fixtype: %d, sats: %d, hdop: %d, speed: %ld, alt: %ld lat: %ld lon: %ld", gps_fixtype, gps_satellites_visible, gps_hdop, gps_speed, gps_altitude, gps_latitude, gps_longitude);
           armed_bit = (base_mode >> 7) & 1;
           if(armed_bit) {
             if(armed_latitude == 0 || armed_longitude == 0) {                                   // set first gps after arm
@@ -339,12 +360,12 @@ void MavLinkData::process_mavlink_packets() {
   
         case MAVLINK_MSG_ID_VFR_HUD:                              
           logger->add_timestamp(Logger::TIMESTAMP_MAVLINK_MSG_ID_VFR_HUD);
-          logger->debug_print(Logger::LOG_MAV_VFR, (char *)"MAVLINK_MSG_ID_VFR_HUD: groundspeed: %d, heading: %d, throttle: %d, alt: %d, climbrate: %d", mavlink_msg_vfr_hud_get_groundspeed(&msg), mavlink_msg_vfr_hud_get_heading(&msg), mavlink_msg_vfr_hud_get_throttle(&msg), mavlink_msg_vfr_hud_get_alt(&msg), mavlink_msg_vfr_hud_get_climb(&msg));
+          logger->debug_print(Logger::LOG_MAV_VFR, (char *)"MAVLINK_MSG_ID_VFR_HUD: groundspeed: %f, heading: %d, throttle: %d, alt: %f, climbrate: %f", mavlink_msg_vfr_hud_get_groundspeed(&msg), mavlink_msg_vfr_hud_get_heading(&msg), mavlink_msg_vfr_hud_get_throttle(&msg), mavlink_msg_vfr_hud_get_alt(&msg), mavlink_msg_vfr_hud_get_climb(&msg));
           groundspeed = mavlink_msg_vfr_hud_get_groundspeed(&msg);         
           heading = mavlink_msg_vfr_hud_get_heading(&msg);                 
           throttle = mavlink_msg_vfr_hud_get_throttle(&msg);           
           bar_altitude = mavlink_msg_vfr_hud_get_alt(&msg); 
-          climb_rate = mavlink_msg_vfr_hud_get_climb(&msg);           
+          climb_rate = mavlink_msg_vfr_hud_get_climb(&msg);  
           break; 
   
         case MAVLINK_MSG_ID_MISSION_CURRENT:            
@@ -450,6 +471,7 @@ void MavLinkData::process_mavlink_packets() {
           rc6 = mavlink_msg_rc_channels_get_chan6_raw(&msg);
           rc7 = mavlink_msg_rc_channels_get_chan7_raw(&msg);
           rc8 = mavlink_msg_rc_channels_get_chan8_raw(&msg);
+          logger->add_timestamp(logger->TIMESTAMP_MAVLINK_MSG_ID_RC_CHANNELS_RAW);
           break;  
                  
         case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW:

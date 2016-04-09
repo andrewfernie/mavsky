@@ -18,10 +18,28 @@
 #include "MavSky.h"
 #include "Logger.h"
 #include "DataBroker.h"       // todo needed for eeprom constants for now
+#include "Led.h"
 
 extern Logger *logger;
 extern MavLinkData *mav;
 extern DataBroker data_broker;
+extern LedController* led_strip_ptr;
+extern uint8_t led_map[];
+
+uint8_t led_code_buffer[EEPROM_LED_CODE_MAX_SIZE];
+uint16_t led_code_size = 0;
+ 
+uint16_t get_crc(uint8_t* data_p, uint16_t len){
+    unsigned char x;
+    unsigned short crc = 0xFFFF;
+
+    while (len--){
+        x = crc >> 8 ^ *data_p++;
+        x ^= x>>4;
+        crc = (crc << 8) ^ ((uint16_t)(x << 12)) ^ ((uint16_t)(x <<5)) ^ ((uint16_t)x);
+    }
+    return crc;
+}
 
 MavConsole::MavConsole(usb_serial_class port) {
   serial = port;
@@ -42,7 +60,7 @@ void MavConsole::console_print(const char* fmt, ...) {
 
 void MavConsole::do_help() {
   console_print("%s\r\n", PRODUCT_STRING);
-  console_print("debug mav [all|heartbeat|gps|attitude|imu|vfr|status|text|rangefinder|other] [on|off]\r\n"); 
+  console_print("debug mav [all|heartbeat|gps|attitude|imu|vfr|status|text|rangefinder|rc|other] [on|off]\r\n"); 
   console_print("debug frsky [all|vario|fcs|rpm] [on|off]\r\n"); 
   console_print("debug temp [on|off]\r\n"); 
   console_print("dump\r\n");
@@ -51,6 +69,7 @@ void MavConsole::do_help() {
   console_print("map [bar_altitude|rangefinder_distance] vario_altitude [scale]\r\n");                                    
   console_print("map [climb_rate] vario_vertical_speed [scale]\r\n");                                    
   console_print("frsky vfas   [enable|disable]\r\n");
+  console_print("ledmap L1 R1 L2 R2 L3 R3 L4 R4\r\n");
   console_print("factory\r\n");
 }
 
@@ -83,7 +102,7 @@ void MavConsole::do_dump() {
   console_print("HDOP:                      %.2f\r\n", mav->gps_hdop / 100.0);
   console_print("Satellites visible:        %d\r\n", mav->gps_satellites_visible);
   console_print("Temperature:               %d\r\n", mav->temperature);
-  console_print("Barometric Altitude:       %d\r\n", mav->bar_altitude);    
+  console_print("Barometric Altitude:       %f\r\n", mav->bar_altitude);    
   console_print("RangeFinder Altitude:      %d\r\n", mav->rangefinder_distance);      
   console_print("Temperature:               %d\r\n", mav->temperature);
   console_print("Mavlink imu:               x:%-4d y:%-4d z:%-4d\r\n", mav->imu_xacc, mav->imu_yacc, mav->imu_zacc);
@@ -102,7 +121,9 @@ void MavConsole::do_times() {
   console_print("Mavlink mission current:   %d\r\n", logger->get_timestamp_delta(Logger::TIMESTAMP_MAVLINK_MSG_ID_MISSION_CURRENT));
   console_print("Mavlink scaled pressure:   %d\r\n", logger->get_timestamp_delta(Logger::TIMESTAMP_MAVLINK_MSG_ID_SCALED_PRESSURE));
   console_print("Mavlink controller output: %d\r\n", logger->get_timestamp_delta(Logger::TIMESTAMP_MAVLINK_MSG_ID_CONTROLLER_OUTPUT));
-  console_print("Mavlink rangefinder:       %d\r\n", logger->get_timestamp_delta(Logger::TIMESTAMP_MAVLINK_MSG_ID_RANGEFINDER));        
+  console_print("Mavlink rangefinder:       %d\r\n", logger->get_timestamp_delta(Logger::TIMESTAMP_MAVLINK_MSG_ID_RANGEFINDER)); 
+  console_print("Mavlink rc raw:            %d\r\n", logger->get_timestamp_delta(Logger::TIMESTAMP_MAVLINK_MSG_ID_RC_CHANNELS_RAW)); 
+
   console_print("FrSky vario:               %d\r\n", logger->get_timestamp_delta(Logger::TIMESTAMP_FRSKY_VARIO)); 
   console_print("FrSky fas:                 %d\r\n", logger->get_timestamp_delta(Logger::TIMESTAMP_FRSKY_FAS)); 
   console_print("FrSky gps:                 %d\r\n", logger->get_timestamp_delta(Logger::TIMESTAMP_FRSKY_GPS)); 
@@ -136,9 +157,50 @@ void MavConsole::do_frsky() {
   }
 }
 
+void MavConsole::do_ldump() {
+  for(uint16_t i=0; i<16; i++) {
+    console_print("%02x ", EEPROM.read(EEPROM_LED_CODE_BASE + i));
+  }  
+  console_print("\r\n");
+}
+     
 void MavConsole::do_factory() {
   data_broker.write_factory_settings();
-  console_print("Settings restored to factory values\r\n");
+  console_print("Settings restored to factory values.  Please reboot\r\n");
+}
+
+void MavConsole::do_led_map() {
+  char* p;
+  uint8_t temp_map[8];
+
+  for(int i=0; i<8; i++) {
+    temp_map[i] = 9;
+  }
+  for(int i=0; i<8; i++) {
+    p = strtok(NULL, " ");
+    if(strlen(p) == 0) {
+       console_print("Please specify 8 arguments to the ledmap command\r\n");
+       return;
+    }
+    uint8_t observed_led_number = (uint8_t)atoi(p);
+    if(observed_led_number < 1 || observed_led_number > 8) {
+       console_print("LED numbers must be between 1 and 8\r\n");
+       return;
+    }
+    uint8_t internal_led_number = observed_led_number - 1;
+    for(int i=0; i<8; i++) {
+      if(temp_map[i] == internal_led_number) {
+        console_print("LED number %d has been specified more than once.  Please retry\r\n", observed_led_number);
+        return;    
+      }      
+    }
+    temp_map[i] = internal_led_number;
+  }
+  for(int i=0; i<8; i++) {
+    EEPROM.write(EEPROM_LED_MAP_BASE + i, temp_map[i]);
+  }
+  led_strip_ptr->reload();
+  console_print("The new LED map has been written to NVRAM and is now being used\r\n");
 }
 
 void MavConsole::do_command(char *cmd_buffer) {
@@ -180,6 +242,9 @@ void MavConsole::do_command(char *cmd_buffer) {
         } else if (strcmp(p, "rangefinder") == 0) {
             p = strtok(NULL, " ");
             parse_debug_on_off(p, &(logger->debugMavRangeFinderEnable), (char *)"Mav RangeFinder");
+        } else if (strcmp(p, "rc") == 0) {
+            p = strtok(NULL, " ");
+            parse_debug_on_off(p, &(logger->debugMavRcChannelsRawEnable), (char *)"Mav RC");
         } else {
           console_print("Unknown parameter %s\r\n", p);
         }
@@ -209,7 +274,11 @@ void MavConsole::do_command(char *cmd_buffer) {
     } else if(strcmp(p, "map") == 0) {
       do_map(p);
     } else if(strcmp(p, "frsky") == 0) {
-       do_frsky();
+       do_frsky();  
+    } else if(strcmp(p, "ldump") == 0) {
+      do_ldump();
+    } else if(strcmp(p, "ledmap") == 0) {
+      do_led_map();
     } else if(strcmp(p, "factory") == 0) {
       do_factory();
     } else if(strcmp(p, "help") == 0) {
@@ -220,20 +289,73 @@ void MavConsole::do_command(char *cmd_buffer) {
   }
 }
 
-void MavConsole::check_for_console_command() {
-//  while(DEBUG_SERIAL.available()) { 
-  while(serial.available()) { 
-    //uint8_t c = DEBUG_SERIAL.read();
-    uint8_t c = serial.read();
+uint8_t MavConsole::atoh(uint8_t c)
+{
+  uint8_t result = 0;
 
+  if (c >= '0' && c <= '9') {
+      result = (c - '0');
+  } else if (c >= 'a' && c <= 'f') {
+      result = (c - 'a') + 10;
+  } else if (c >= 'A' && c <= 'F') {
+      result = (c - 'A') + 10;
+  }
+  return result;
+}
+
+void MavConsole::check_for_console_command() {
+  while(serial.available()) { 
+    uint8_t c = serial.read();
     if(c == '\r') {
-      serial.write("\r\n");
       cmd_buffer[cmd_index++] = '\0';
-      cmd_index = 0;
-      do_command(cmd_buffer);
-      serial.write("]");
+      cmd_index = 0;      
+      if(led_data_mode) {
+        if(strcmp(cmd_buffer, "datastop") == 0) {
+          console_print("datastop\r\n");            
+          if(led_code_size > 2) {
+            uint16_t download_crc = (led_code_buffer[led_code_size-2] << 8) + led_code_buffer[led_code_size - 1];         
+            uint16_t calculated_crc = get_crc(led_code_buffer, led_code_size - 2);
+            if(download_crc != calculated_crc) {
+              console_print("CRC error.  Calculated CRC is %04x but should have been %04x\r\n", calculated_crc, download_crc);
+            } else {   
+              for(uint16_t i=0; i<led_code_size; i++) {
+                EEPROM.write(EEPROM_LED_CODE_BASE + i, led_code_buffer[i]);
+              }  
+              led_strip_ptr->reload();
+              console_print("Data successfully written to NVRAM.  LED patterns have been reloaded.\r\n");
+            }
+          } else {
+            console_print("Insufficient data received\r\n");            
+          } 
+          led_data_mode = 0;
+          cmd_index = 0;
+          serial.write("]"); 
+        } else {
+          while((uint16_t)cmd_index < strlen(cmd_buffer)) {
+            uint8_t high = atoh(cmd_buffer[cmd_index++]);
+            uint8_t low = atoh(cmd_buffer[cmd_index++]);
+            uint16_t data = (high << 4) + low;
+            if(led_code_size < EEPROM_LED_CODE_MAX_SIZE) {
+              led_code_buffer[led_code_size++] = data;
+            }
+          }       
+          cmd_index = 0;
+        }
+      } else {
+        serial.write("\r\n");       
+        if(strcmp(cmd_buffer, "datastart") == 0) {
+          led_data_mode = 1;
+          led_code_size = 0;
+          cmd_index = 0;         
+        } else {
+          do_command(cmd_buffer);
+          serial.write("]");
+        }
+      }
     } else {
-      serial.write(c);
+      if(!led_data_mode) {
+        serial.write(c);
+      }
       cmd_buffer[cmd_index++] = tolower(c);
     }
   }

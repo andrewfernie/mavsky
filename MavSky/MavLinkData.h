@@ -69,11 +69,11 @@ class MavLinkData {
     uint16_t  mav_cog = 0;                // not heading but actual course in degrees.  If unknown UINT16_MAX
     
     // MAVLINK_MSG_ID_VFR_HUD 
-    uint32_t  groundspeed = 0;            // Current ground speed in m/s
+    float     groundspeed = 0;            // Current ground speed in m/s
     uint32_t  heading = 0;                // Current heading in degrees, in compass units (0..360, 0=north)
     uint16_t  throttle = 0;               // Current throttle setting in integer percent, 0 to 100
-    int32_t   bar_altitude = 0;          
-    int32_t   climb_rate = 0;             
+    float     bar_altitude = 0;          
+    float     climb_rate = 0;             
     
     // MAVLINK_MSG_ID_RAW_IMU
     int16_t   imu_xacc = 0;
@@ -121,10 +121,10 @@ class MavLinkData {
     int16_t   average_battery_current = 0;       
     int32_t   armed_latitude = 0;               
     int32_t   armed_longitude = 0;
-    uint32_t  armed_distance = 0;           // in m
-    uint16_t  armed_bearing = 0;            // in degrees (0-359)  
-    uint16_t  calced_cog = 0;                 // in degrees (0-359)  
-    
+    uint32_t  armed_distance = 0;                     // in m
+    uint16_t  armed_bearing = 0;                      // in degrees (0-359)  
+    uint16_t  calced_cog = 0;                         // in degrees (0-359)  
+    uint32_t  calced_distance_travelled = 0;          // in cm
     uint32_t  tenth_amp_per_millisecond_consumed = 0;  
     
     MavLinkData();
@@ -140,6 +140,8 @@ class MavLinkData {
     int mavlink_imu_data_valid();
     int mavlink_attitude_data_valid();
     int mavlink_rangefinder_data_valid();
+    int mavlink_rc_channels_raw_data_valid();
+    
     void process_mavlink_packets();  
     void process_1000_millisecond(); 
     void process_100_millisecond(); 

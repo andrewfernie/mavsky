@@ -1,5 +1,6 @@
 --
 --  Author: Scott Simpson
+--  Version 2.1.16a
 --
 -- 	This program is free software: you can redistribute it and/or modify
 --  it under the terms of the GNU General Public License as published by
@@ -12,21 +13,22 @@
 --  GNU General Public License for more details.
 --
 --  A copy of the GNU General Public License is available at <http://www.gnu.org/licenses/>.
---    
-
-initialize()
-
+-- 
+-------------------------------------------------------------------------------------------------------------------------------------
+--
 local function run(event)
-    checkForExtensionMessage()
- 
-    lcd.clear()
-    drawTopPanel()
-    local i
-    local row = 1
+  lcd.clear()
+  drawTopPanel()
+  local i
+  local row = 1
+  if messageFirst == messageNext then
+    lcd.drawText(1, row * 10 + 2, "There are no text messages to display", 0)
+  else
     for i = messageFirst, messageNext - 1, 1 do
-        lcd.drawText(1, row * 10 + 2, messageArray[(i % MESSAGEBUFFERSIZE) + 1], 0)
-        row = row + 1
+      lcd.drawText(1, row * 10 + 2, messageArray[(i % MESSAGEBUFFERSIZE) + 1], 0)
+      row = row + 1
     end
+  end
 end
 
 return {run=run}

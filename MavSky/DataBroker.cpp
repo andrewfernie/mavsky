@@ -11,6 +11,7 @@
 //  A copy of the GNU General Public License is available at <http://www.gnu.org/licenses/>.
 //    
 #include <EEPROM.h>
+#include "MavSky.h"
 #include "DataBroker.h"
 #include "FrSkySPort.h"
 #include "MavLinkData.h"
@@ -46,7 +47,7 @@ void DataBroker::console_map(char* p) {
 }
 
 void DataBroker::get_vario_data(int32_t *altitude, int32_t *vertical_speed) {
-  *vertical_speed = mav->climb_rate * 100;                                   
+  *vertical_speed = (int32_t)(mav->climb_rate * 100);                                   
   *altitude = data_map.get_mapped_data(data_map.VARIO_ALTITUDE);
 }
 
@@ -55,7 +56,7 @@ void DataBroker::get_fas_data(uint32_t *voltage, uint32_t *current) {
   *current = mav->average_battery_current;
 }
   
-void DataBroker::get_gps_data(uint32_t *lon, uint32_t *lat, int32_t *alt, uint32_t *speed, uint32_t *heading) {
+void DataBroker::get_gps_data(int32_t *lon, int32_t *lat, int32_t *alt, uint32_t *speed, uint32_t *heading) {
   *lon = mav->gps_longitude;
   *lat = mav->gps_latitude;
   *alt = mav->gps_altitude / 10;

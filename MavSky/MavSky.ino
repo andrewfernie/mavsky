@@ -50,9 +50,7 @@
 
 #include "Led.h"
 
-
 #define LEDPIN          13
-
                           
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -63,8 +61,8 @@ MavLinkData *mav;
 FrSkySPort *frsky;
 DataBroker *data_broker;
 
-DMAMEM int displayMemory[8*6];
-int drawingMemory[8*6];
+DMAMEM int displayMemory[MAX_LEDS_PER_STRIP*6];
+int drawingMemory[MAX_LEDS_PER_STRIP*6];
   
 LedController* led_strip_ptr;
 
@@ -131,8 +129,10 @@ void loop()  {
   
   if(current_milli >= next_100_loop) {
     next_100_loop = current_milli + 100;
-    check_for_faults();
-     mav->process_100_millisecond();
+    if(current_milli > 10000) {
+      check_for_faults();
+    }
+    mav->process_100_millisecond();
   }  
   
   if(current_milli >= next_10_loop) {
