@@ -23,11 +23,12 @@
 #define GROUP_MODE_RANDOM      4
 #define GROUP_MODE_BAR         5
 #define GROUP_MODE_BOUNCE      6
-#define GROUP_MODE_DORMANT     7
+#define GROUP_MODE_FILL        7
 
 class LedController {
   private:
     uint16_t  pc = 0;
+    uint16_t  current_instruction_pc = 0;
     OctoWS2811* leds;
     int32_t pausing_time_left = 0; 
     uint32_t get_variable(uint16_t input);
@@ -37,7 +38,7 @@ class LedController {
     void cmd_group_set();
     void cmd_group_clear();
     void cmd_clear_groups();
-    void cmd_disable_groups();
+    void cmd_disable_actions();
     void cmd_load_reg_const();
     void cmd_load_reg_const8();   
     void cmd_load_reg_mav();
@@ -55,7 +56,7 @@ class LedController {
     void cmd_set_random();
     void cmd_set_bar();
     void cmd_set_off();
-    void cmd_set_dormant();
+    void cmd_set_fill();
 
     void cmd_0eq1();
     void cmd_0ne1();
@@ -76,6 +77,7 @@ class LedController {
     void reload();
     void process_10_millisecond();
     void process_command();
+    void dump_diags();
 };
 
 #endif
