@@ -14,6 +14,7 @@
 //  
 
 #include "MavSky.h"
+#include "FastLED.h"
 #include "OctoWS2811.h"
 #include "LedGroup.h"
 #include "LedGroupAction.h"
@@ -25,13 +26,14 @@
 
 extern MavLinkData *mav;
 extern MavConsole *console;
-extern int displayMemory[];
-extern int drawingMemory[];
+//extern int displayMemory[];
+//extern int drawingMemory[];
 
 #define MS_PER_TIMESLICE       10
 
 #define VAR_MAV_RC_CH7                  0x01      // rc.ch7
 #define VAR_MAV_RC_CH8                  0x02      // rc.ch8
+#define VAR_MAV_RC_RSSI                 0x03      // rc.rssi
 
 #define VAR_MAV_BATTERY_CURRENT         0x10      // bat.current
 #define VAR_MAV_BATTERY_VOLTAGE         0x11      // bat.voltage
@@ -45,6 +47,7 @@ extern int drawingMemory[];
 #define VAR_MAV_VEHICLE_COG             0x31      // fc.cog
 #define VAR_MAV_VEHICLE_HEADING         0x32      // fc.heading
 #define VAR_MAV_VEHICLE_SPEED           0x33      // fc.speed
+#define VAR_MAV_VEHICLE_DISTANCE        0x34      // fc.distance                    distance from armed in meters
 
 #define VAR_MAV_FC_ARMED                0x40      // fc.armed
 #define VAR_MAV_FC_FLIGHTMODE           0x41      // fc.flightmode
@@ -116,11 +119,18 @@ LedGroups* led_groups;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         
 LedController::LedController() {
-  leds = new OctoWS2811(MAX_LEDS_PER_STRIP, displayMemory, drawingMemory, WS2811_GRB | WS2811_800kHz);
-  leds->begin();
+  FastLED.addLeds<CHIPSET,  2, RGB_ORDER>(leds, 0*MAX_LEDS_PER_STRIP, MAX_LEDS_PER_STRIP).setCorrection( TypicalLEDStrip );
+  FastLED.addLeds<CHIPSET, 14, RGB_ORDER>(leds, 1*MAX_LEDS_PER_STRIP, MAX_LEDS_PER_STRIP).setCorrection( TypicalLEDStrip );
+  FastLED.addLeds<CHIPSET,  7, RGB_ORDER>(leds, 2*MAX_LEDS_PER_STRIP, MAX_LEDS_PER_STRIP).setCorrection( TypicalLEDStrip );
+  FastLED.addLeds<CHIPSET,  8, RGB_ORDER>(leds, 3*MAX_LEDS_PER_STRIP, MAX_LEDS_PER_STRIP).setCorrection( TypicalLEDStrip );
+  FastLED.addLeds<CHIPSET,  6, RGB_ORDER>(leds, 4*MAX_LEDS_PER_STRIP, MAX_LEDS_PER_STRIP).setCorrection( TypicalLEDStrip );
+  FastLED.addLeds<CHIPSET, 20, RGB_ORDER>(leds, 5*MAX_LEDS_PER_STRIP, MAX_LEDS_PER_STRIP).setCorrection( TypicalLEDStrip );
+  FastLED.addLeds<CHIPSET, 21, RGB_ORDER>(leds, 6*MAX_LEDS_PER_STRIP, MAX_LEDS_PER_STRIP).setCorrection( TypicalLEDStrip );
+  FastLED.addLeds<CHIPSET,  5, RGB_ORDER>(leds, 7*MAX_LEDS_PER_STRIP, MAX_LEDS_PER_STRIP).setCorrection( TypicalLEDStrip );
+  
   led_groups = new LedGroups(leds);
   reload();
-  leds->show();
+  FastLED.show();
 }
 
 void LedController::dump_diags() {
@@ -154,7 +164,7 @@ void LedController::reload() {
   }
 
   for (int i=0; i < MAX_LEDS_PER_STRIP*MAX_STRIPS; i++) {
-    leds->setPixel(i, 0x000000);
+    leds[i] = 0;
   }
 
   led_groups->clear_led_assignments();    
@@ -170,6 +180,10 @@ uint32_t LedController::get_variable(uint16_t input) {
          
     case VAR_MAV_RC_CH8:
       return mav->rc8;
+      break;
+          
+    case VAR_MAV_RC_RSSI:
+      return mav->rssi;
       break;
       
     case VAR_MAV_BATTERY_CURRENT:
@@ -206,6 +220,10 @@ uint32_t LedController::get_variable(uint16_t input) {
       
     case VAR_MAV_VEHICLE_HEADING:
       return mav->heading;
+      break;
+          
+    case VAR_MAV_VEHICLE_DISTANCE:
+      return mav->armed_distance;
       break;
       
     case VAR_MAV_VEHICLE_SPEED:
@@ -717,7 +735,7 @@ void LedController::process_command() {
 }
 
 void LedController::update_leds() {  
-  leds->show();
+  FastLED.show();
 }
 
 void LedController::process_10_millisecond() {  
