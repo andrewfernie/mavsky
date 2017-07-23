@@ -18,47 +18,6 @@
     <None Include="MavSky.ino" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DataBroker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DataMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Diags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ExtendedMessage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrSkySPort.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Led.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Logger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MavConsole.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MavLinkData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MavSky.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OctoWS2811.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LedGroup.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="__vm\.MavSky.vsarduino.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="DataBroker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -77,6 +36,12 @@
     <ClCompile Include="Led.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LedGroup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LedGroupAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -89,8 +54,46 @@
     <ClCompile Include="OctoWS2811.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LedGroup.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DataBroker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DataMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Diags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExtendedMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrSkySPort.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Led.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LedGroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LedGroupAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MavConsole.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MavLinkData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MavSky.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OctoWS2811.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

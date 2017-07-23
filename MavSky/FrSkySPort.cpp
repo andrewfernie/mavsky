@@ -34,6 +34,7 @@ extern MavConsole *console;    // todo probably not needed
 #define   DELAY_FAS_PERIOD             500
 #define   DELAY_GPS_PERIOD             500
 #define   DELAY_RPM_PERIOD             100
+#define   DELAY_ASS_PERIOD             500
 #define   DELAY_SP2UH_PERIOD           500
 
 FrSkySPort::FrSkySPort() {
@@ -81,8 +82,14 @@ void FrSkySPort::set_gps_request_callback(void (*callback)(int32_t *p1, int32_t 
   gps_data_request_function = callback;
 }
 
-void FrSkySPort::set_rpm_request_callback(void (*callback)(uint32_t *rpm)) {
-  rpm_data_request_function = callback;
+void FrSkySPort::set_rpm_request_callback(void(*callback)(uint32_t *rpm))
+{
+    rpm_data_request_function = callback;
+};
+
+void FrSkySPort::set_ass_request_callback(void(*callback)(uint32_t *ass))
+{
+    ass_data_request_function = callback;
 };
 
 void FrSkySPort::set_sp2uh_request_callback(void (*callback)(uint32_t *fuel)) {
@@ -95,7 +102,8 @@ void FrSkySPort::frsky_process_sensor_request(uint8_t sensorId) {
   static uint32_t delay_rpm_next = 0;
   static uint32_t delay_gps_next = 0;
   static uint32_t delay_sp2uh_next = 0;
-  
+  static uint32_t delay_ass_next = 0;
+
   uint32_t latlong = 0;
   
   uint32_t process_timestamp = millis();
@@ -252,7 +260,24 @@ void FrSkySPort::frsky_process_sensor_request(uint8_t sensorId) {
       break;  
       
     case SENSOR_ID_FLVSS:
-      break;           
+      break;         
+
+    case SENSOR_ID_ASS:
+        logger->add_timestamp(Logger::TIMESTAMP_FRSKY_ASS);
+        if (process_timestamp > delay_ass_next)
+        {
+            if (ass_data_request_function != NULL)
+            {
+                ass_data_request_function(&ass);
+            }
+            frsky_send_package(FR_ID_AIR_SPEED_FIRST, ass);
+            delay_ass_next = process_timestamp + DELAY_ASS_PERIOD;
+        }
+        else
+        {
+            frsky_send_null(FR_ID_AIR_SPEED_FIRST);
+        }  
+        break;
   }
 }
 

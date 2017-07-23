@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -11,20 +11,24 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{9C47E20A-B325-4E9D-A553-2B4F90396797}</ProjectGuid>
-    <RootNamespace>MavSky</RootNamespace>
+    <ProjectGuid>{C5F80730-F44F-4478-BDAE-6634EFC2CA88}</ProjectGuid>
+    <RootNamespace>
+    </RootNamespace>
+    <ProjectName>MavSky</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>
+    </PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>
+    </PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -44,10 +48,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\arduino\hardware\teensy\avr\cores\teensy3;C:\Program Files (x86)\arduino\hardware\teensy\avr\cores\teensy3\utils;C:\Program Files (x86)\arduino\hardware\teensy\avr\cores\teensy3\avr;C:\Users\Andrew\Documents\Arduino\ArduinoProjectRepositories\mavsky\MavSky;C:\Program Files (x86)\arduino\hardware\teensy\avr\libraries\EEPROM;C:\Program Files (x86)\arduino\hardware\teensy\avr\libraries\EEPROM\utility;c:\users\andrew\documents\arduino\ArduinoProjectRepositories\Andrew_MavLink_FrSkySPort\libraries\GCS_MAVLink;c:\users\andrew\documents\arduino\ArduinoProjectRepositories\Andrew_MavLink_FrSkySPort\libraries\GCS_MAVLink\utility;C:\Program Files (x86)\arduino\libraries;C:\Program Files (x86)\arduino\hardware\teensy\avr\libraries;C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\3qo21xkc.arn\Micro Platforms\default\debuggers;c:\users\andrew\documents\arduino\ArduinoProjectRepositories\Andrew_MavLink_FrSkySPort\libraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ForcedIncludeFiles>C:\Users\Andrew\Documents\Arduino\ArduinoProjectRepositories\mavsky\MavSky\__vm\.MavSky.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\teensy\avr\libraries\EEPROM;$(ProjectDir)..\libraries\GCS_MAVLink;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\libraries;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\teensy\avr\libraries;$(ProjectDir)..\libraries;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\avr;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\util;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\utils;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\teensy\avr\cores\teensy3\avr;$(ProjectDir)..\..\..\..\..\..\..\Program Files (x86)\Arduino\hardware\tools\arm\arm-none-eabi\include;$(ProjectDir)..\MavSky;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(ProjectDir)__vm\.MavSky.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
-      <PreprocessorDefinitions>__MK20DX256__;TEENSYDUINO=124;ARDUINO=10605;F_CPU=96000000;ARDUINO_ARCH_AVR;USB_SERIAL;LAYOUT_US_ENGLISH;__cplusplus=201103L;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__HARDWARE_MK20dx256__;__HARDWARE_MK20DX256__;__MK20DX256__;TEENSYDUINO=137;ARDUINO=10803;F_CPU=96000000;USB_SERIAL;LAYOUT_US_ENGLISH;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -68,46 +72,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectCapability Include="VisualMicro" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="MavSky.ino">
       <FileType>CppCode</FileType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="DataBroker.h">
-      <FileType>CppHeader</FileType>
-    </ClInclude>
-    <ClInclude Include="DataMap.h">
-      <FileType>CppHeader</FileType>
-    </ClInclude>
-    <ClInclude Include="Diags.h">
-      <FileType>CppHeader</FileType>
-    </ClInclude>
-    <ClInclude Include="ExtendedMessage.h">
-      <FileType>CppHeader</FileType>
-    </ClInclude>
-    <ClInclude Include="FrSkySPort.h">
-      <FileType>CppHeader</FileType>
-    </ClInclude>
-    <ClInclude Include="Led.h">
-      <FileType>CppHeader</FileType>
-    </ClInclude>
-    <ClInclude Include="LedGroup.h" />
-    <ClInclude Include="Logger.h">
-      <FileType>CppHeader</FileType>
-    </ClInclude>
-    <ClInclude Include="MavConsole.h">
-      <FileType>CppHeader</FileType>
-    </ClInclude>
-    <ClInclude Include="MavLinkData.h">
-      <FileType>CppHeader</FileType>
-    </ClInclude>
-    <ClInclude Include="MavSky.h">
-      <FileType>CppHeader</FileType>
-    </ClInclude>
-    <ClInclude Include="OctoWS2811.h">
-      <FileType>CppHeader</FileType>
-    </ClInclude>
-    <ClInclude Include="__vm\.MavSky.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataBroker.cpp" />
@@ -117,11 +87,56 @@
     <ClCompile Include="FrSkySPort.cpp" />
     <ClCompile Include="Led.cpp" />
     <ClCompile Include="LedGroup.cpp" />
+    <ClCompile Include="LedGroupAction.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MavConsole.cpp" />
     <ClCompile Include="MavLinkData.cpp" />
     <ClCompile Include="OctoWS2811.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DataBroker.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="DataMap.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="Diags.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="ExtendedMessage.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="FrSkySPort.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="Led.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="LedGroup.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="LedGroupAction.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="MavConsole.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="MavLinkData.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="MavSky.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+    <ClInclude Include="OctoWS2811.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
+  </ItemGroup>
+  <PropertyGroup>
+    <DebuggerFlavor>VisualMicroDebugger</DebuggerFlavor>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

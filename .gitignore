@@ -4,3 +4,5 @@ ScottFlysConsole/Setup/debug/*
 ScottFlysConsole/.vs/*
 Patterns/*.dat
 Package/*
+MavSky/Debug/*
+MavSky/_vm/*

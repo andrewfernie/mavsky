@@ -34,6 +34,7 @@ DataBroker::DataBroker() {
   frsky->set_fas_request_callback(get_fas_data);
   frsky->set_gps_request_callback(get_gps_data);
   frsky->set_rpm_request_callback(get_rpm_data);
+  frsky->set_ass_request_callback(get_ass_data);
   frsky->set_sp2uh_request_callback(get_sp2uh_data);
 }
 
@@ -60,13 +61,20 @@ void DataBroker::get_gps_data(int32_t *lon, int32_t *lat, int32_t *alt, uint32_t
   *lon = mav->gps_longitude;
   *lat = mav->gps_latitude;
   *alt = mav->gps_altitude / 10;
-  *speed = mav->gps_speed * 10;
+  *speed = mav->gps_speed * 10;             // was cm/s now mm/s
   *heading = mav->heading * 100;            // 10000 = 100 deg   
 }
 
-void DataBroker::get_rpm_data(uint32_t *rpm) {
-  *rpm = extended_message_processor.telem_next_extension_word();
-  //*rpm = telem_next_extension_word();   
+void DataBroker::get_rpm_data(uint32_t *rpm)
+{
+    *rpm = extended_message_processor.telem_next_extension_word();
+    //*rpm = telem_next_extension_word();   
+}
+
+void DataBroker::get_ass_data(uint32_t *ass)
+{
+    *ass = mav->airspeed * 1000;  //  was m/s so now mm/s
+
 }
 
 void DataBroker::get_sp2uh_data(uint32_t *fuel) {

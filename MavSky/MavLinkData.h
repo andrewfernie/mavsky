@@ -70,6 +70,7 @@ class MavLinkData {
     
     // MAVLINK_MSG_ID_VFR_HUD 
     float     groundspeed = 0;            // Current ground speed in m/s
+    float     airspeed = 0;               // Current air speed in m/s
     uint32_t  heading = 0;                // Current heading in degrees, in compass units (0..360, 0=north)
     uint16_t  throttle = 0;               // Current throttle setting in integer percent, 0 to 100
     float     bar_altitude = 0;          
