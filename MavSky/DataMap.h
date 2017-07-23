@@ -16,6 +16,8 @@
 #include <WProgram.h> 
   
 #define EEPROM_INIT_VALUE_217           0x68  
+#define EEPROM_INIT_VALUE_218           0x69  
+#define EEPROM_INIT_VALUE_2117          0x6a  
 
 #define MAP_SOURCE_RANGEFINDER_DISTANCE 0
 #define MAP_SOURCE_BAR_ALTITUDE         1

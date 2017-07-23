@@ -23,13 +23,17 @@ class MavLinkData {
   private:  
     uint8_t    mavlink_buffer[MAVLINK_MAX_PACKET_LEN];
     
-    int16_t    battery_current_buffer[MAV_HISTORY_BUFFER_SIZE];
+    uint16_t   battery_current_buffer[MAV_HISTORY_BUFFER_SIZE];
     int16_t    battery_current_buffer_start = 0;
     int16_t    battery_current_buffer_length = 0;
     
-    int16_t    battery_voltage_buffer[MAV_HISTORY_BUFFER_SIZE];
+    uint16_t   battery_voltage_buffer[MAV_HISTORY_BUFFER_SIZE];
     int16_t    battery_voltage_buffer_start = 0;
     int16_t    battery_voltage_buffer_length = 0;
+
+    uint16_t   rssi_buffer[MAV_HISTORY_BUFFER_SIZE];
+    int16_t    rssi_buffer_start = 0;
+    int16_t    rssi_buffer_length = 0;
 
     uint32_t   last_process_100_millisecond_time = 0;
     uint32_t   last_process_1000_gps_latitude = 0;
@@ -59,6 +63,7 @@ class MavLinkData {
     int8_t    battery_remaining = 0;      // Remaining battery energy: (0%: 0, 100%: 100), -1: autopilot estimate the remaining battery
     
     // MAVLINK_MSG_ID_GPS_RAW_INT 
+    int32_t   gps_time_msec = 0;          // time since epoch or boot time
     uint8_t   gps_fixtype = 0;            // 0= No GPS, 1 = No Fix, 2 = 2D Fix, 3 = 3D Fix
     uint8_t   gps_satellites_visible = 0; // number of visible satelites
     int32_t   gps_latitude = 0;           // 585522540;
@@ -101,7 +106,7 @@ class MavLinkData {
     
     // MAVLINK_MSG_ID_RANGEFINDER
     int32_t   rangefinder_distance = 0;
-  
+
     // MAVLINK_MSG_ID_BATTERY_STATUS
     uint16_t  current_consumed = 0;    
     uint16_t  energy_consumed = 0;    
@@ -116,10 +121,12 @@ class MavLinkData {
     uint16_t rc6 = 0;
     uint16_t rc7 = 0;
     uint16_t rc8 = 0;
+    uint8_t rssi = 0;
   
     // Calculated
     uint16_t  average_battery_voltage = 0;          
-    int16_t   average_battery_current = 0;       
+    uint16_t  average_battery_current = 0;       
+    uint16_t  average_rssi= 0;       
     int32_t   armed_latitude = 0;               
     int32_t   armed_longitude = 0;
     uint32_t  armed_distance = 0;                     // in m
@@ -127,13 +134,15 @@ class MavLinkData {
     uint16_t  calced_cog = 0;                         // in degrees (0-359)  
     uint32_t  calced_distance_travelled = 0;          // in cm
     uint32_t  tenth_amp_per_millisecond_consumed = 0;  
+    int16_t   armed_time = 0;                         // seconds since armed
+    int16_t   throttle_time = 0;                      // seconds that throttle has been above 25% since boot
     
     MavLinkData();
     ~MavLinkData();
     void start_mavlink_packet_type(mavlink_message_t* msg_ptr, uint8_t stream_id, uint16_t rate);
     void start_mavlink_if_stopped(mavlink_message_t* msg_ptr);
-    void mavlink_average_push(int16_t data, int16_t* p_buffer, int16_t* p_start, int16_t* p_length, int16_t max_length);
-    int16_t mavlink_get_average(int16_t* p_buffer, int16_t start, int16_t length, int16_t use_samples, int16_t max_length);
+    void mavlink_average_push(uint16_t data, uint16_t* p_buffer, int16_t* p_start, int16_t* p_length, int16_t max_length);
+    uint16_t mavlink_get_average(uint16_t* p_buffer, int16_t start, int16_t length, int16_t use_samples, int16_t max_length);
     int mavlink_heartbeat_data_valid();
     int mavlink_sys_status_data_valid();
     int mavlink_gps_data_valid();

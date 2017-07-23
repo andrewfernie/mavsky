@@ -29,18 +29,22 @@ DataBroker::DataBroker() {
   //mav->mavlink_sys_status_data_valid()
 
   if(EEPROM.read(EEPROM_ADDR_FRSKY_VFAS_ENABLE)) {
+    frsky->set_fas_request_callback(get_fas_data);
+  }  
+  if(EEPROM.read(EEPROM_ADDR_FRSKY_VARIO_ENABLE)) {
     frsky->set_vario_request_callback(get_vario_data);
   }
-  frsky->set_fas_request_callback(get_fas_data);
   frsky->set_gps_request_callback(get_gps_data);
   frsky->set_rpm_request_callback(get_rpm_data);
   frsky->set_ass_request_callback(get_ass_data);
   frsky->set_sp2uh_request_callback(get_sp2uh_data);
+  frsky->set_sp2ur_request_callback(get_sp2ur_data);
 }
 
 void DataBroker::write_factory_settings() {
   data_map.write_factory_settings();
   EEPROM.write(EEPROM_ADDR_FRSKY_VFAS_ENABLE, 1);
+  EEPROM.write(EEPROM_ADDR_FRSKY_VARIO_ENABLE, 1);
 }
 
 void DataBroker::console_map(char* p) {
@@ -79,6 +83,12 @@ void DataBroker::get_ass_data(uint32_t *ass)
 
 void DataBroker::get_sp2uh_data(uint32_t *fuel) {
   *fuel = mav->battery_remaining; 
+}
+
+void DataBroker::get_sp2ur_data(uint32_t *accx, uint32_t *accy, uint32_t *accz) {
+  *accx = mav->average_rssi; 
+  *accy = 0;                  // unused
+  *accz = 0;                  // unused
 }
 
 

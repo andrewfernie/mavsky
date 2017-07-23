@@ -28,6 +28,8 @@ class DataBroker {
     static void get_rpm_data(uint32_t *rpm);
     static void get_ass_data(uint32_t *ass);
     static void get_sp2uh_data(uint32_t *fuel);
+    static void get_sp2ur_data(uint32_t *accx, uint32_t *accy, uint32_t *accz);
+
     static ExtendedMessage extended_message_processor;
     static DataMap data_map;
     void write_factory_settings();
