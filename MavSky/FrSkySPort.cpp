@@ -34,7 +34,7 @@ extern MavConsole *console;    // todo probably not needed
 #define   DELAY_FAS_PERIOD             500
 #define   DELAY_GPS_PERIOD             500
 #define   DELAY_RPM_PERIOD             100
-#define   DELAY_ASS_PERIOD             500
+#define   DELAY_ASPD_PERIOD             500
 #define   DELAY_SP2UH_PERIOD           500
 #define   DELAY_SP2UR_PERIOD           500
 
@@ -87,8 +87,8 @@ void FrSkySPort::set_rpm_request_callback(void(*callback)(uint32_t *rpm)) {
     rpm_data_request_function = callback;
 };
 
-void FrSkySPort::set_ass_request_callback(void(*callback)(uint32_t *ass)) {
-    ass_data_request_function = callback;
+void FrSkySPort::set_aspd_request_callback(void(*callback)(uint32_t *aspd)) {
+    aspd_data_request_function = callback;
 };
 
 void FrSkySPort::set_sp2uh_request_callback(void (*callback)(uint32_t *fuel)) {
@@ -106,7 +106,7 @@ void FrSkySPort::frsky_process_sensor_request(uint8_t sensorId) {
   static uint32_t delay_gps_next = 0;
   static uint32_t delay_sp2uh_next = 0;
   static uint32_t delay_sp2ur_next = 0;
-  static uint32_t delay_ass_next = 0;
+  static uint32_t delay_aspd_next = 0;
 
   uint32_t latlong = 0;
   
@@ -306,16 +306,16 @@ void FrSkySPort::frsky_process_sensor_request(uint8_t sensorId) {
     case SENSOR_ID_FLVSS:
       break;         
 
-    case SENSOR_ID_ASS:
-        logger->add_timestamp(Logger::TIMESTAMP_FRSKY_ASS);
-        if (ass_data_request_function == NULL) {
+    case SENSOR_ID_ASPD:
+        logger->add_timestamp(Logger::TIMESTAMP_FRSKY_ASPD);
+        if (aspd_data_request_function == NULL) {
            break;
 		}
-        if (process_timestamp > delay_ass_next) {
+        if (process_timestamp > delay_aspd_next) {
 
-          ass_data_request_function(&ass);
-          frsky_send_package(FR_ID_AIR_SPEED_FIRST, ass);
-          delay_ass_next = process_timestamp + DELAY_ASS_PERIOD;
+          aspd_data_request_function(&aspd);
+          frsky_send_package(FR_ID_AIR_SPEED_FIRST, aspd);
+          delay_aspd_next = process_timestamp + DELAY_ASPD_PERIOD;
         } else {
           frsky_send_null(FR_ID_AIR_SPEED_FIRST);
         }  

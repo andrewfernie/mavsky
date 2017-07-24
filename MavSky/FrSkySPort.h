@@ -26,7 +26,7 @@
 #define SENSOR_ID_ID8               0x67 // 7  
 #define SENSOR_ID_ID9               0x48 // 8  
 #define SENSOR_ID_ID10              0xE9 // 9  
-#define SENSOR_ID_ASS               0x6A // 10 airspeed sensor ASS-70, ASS-100
+#define SENSOR_ID_ASPD               0x6A // 10 airspeed sensor ASS-70, ASS-100
 #define SENSOR_ID_ID12              0xCB // 11 
 #define SENSOR_ID_ID13              0xAC // 12 
 #define SENSOR_ID_ID14              0x0D // 13 
@@ -104,7 +104,7 @@ class FrSkySPort {
     uint32_t gps_speed = 0; 
     uint32_t gps_heading = 0;  
     uint32_t rpm = 0;
-    uint32_t ass = 0;
+    uint32_t aspd = 0;
     uint32_t sp2uh_fuel = 0;
     uint32_t sp2ur_accx = 0;
     uint32_t sp2ur_accy = 0;
@@ -113,7 +113,7 @@ class FrSkySPort {
     void (*fas_data_request_function)(uint32_t *voltage, uint32_t *current) = NULL;
     void (*gps_data_request_function)(int32_t *lon, int32_t *lat, int32_t *alt, uint32_t *speed, uint32_t *heading) = NULL;  
     void (*rpm_data_request_function)(uint32_t *rpm) = NULL; 
-	void (*ass_data_request_function)(uint32_t *ass) = NULL; 
+	void (*aspd_data_request_function)(uint32_t *aspd) = NULL; 
     void (*sp2uh_data_request_function)(uint32_t *fuel) = NULL; 
     void (*sp2ur_data_request_function)(uint32_t *accx, uint32_t *accy, uint32_t *accz) = NULL; 
 
@@ -133,7 +133,7 @@ class FrSkySPort {
     void set_fas_request_callback(void (*callback)(uint32_t *voltage, uint32_t *current));
     void set_gps_request_callback(void (*callback)(int32_t *lon, int32_t *lat, int32_t *alt, uint32_t *speed, uint32_t *heading));
     void set_rpm_request_callback(void(*callback)(uint32_t *rpm));
-    void set_ass_request_callback(void(*callback)(uint32_t *ass));
+    void set_aspd_request_callback(void(*callback)(uint32_t *aspd));
     void set_sp2uh_request_callback(void (*callback)(uint32_t *fuel));
     void set_sp2ur_request_callback(void (*callback)(uint32_t *accx, uint32_t *accy, uint32_t *accz));
 };

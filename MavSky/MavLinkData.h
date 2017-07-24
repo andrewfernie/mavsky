@@ -99,7 +99,9 @@ class MavLinkData {
     
     // MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT
     uint16_t  wp_dist = 0;                 // meters
-    
+    int16_t   wp_brg = 0;                 // degrees
+
+
     // MAVLINK_MSG_ID_STATUSTEXT
     uint16_t  ap_status_severity;
     mavlink_statustext_t statustext;

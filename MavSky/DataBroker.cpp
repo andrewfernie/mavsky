@@ -36,7 +36,7 @@ DataBroker::DataBroker() {
   }
   frsky->set_gps_request_callback(get_gps_data);
   frsky->set_rpm_request_callback(get_rpm_data);
-  frsky->set_ass_request_callback(get_ass_data);
+  frsky->set_aspd_request_callback(get_aspd_data);
   frsky->set_sp2uh_request_callback(get_sp2uh_data);
   frsky->set_sp2ur_request_callback(get_sp2ur_data);
 }
@@ -75,9 +75,9 @@ void DataBroker::get_rpm_data(uint32_t *rpm)
     //*rpm = telem_next_extension_word();   
 }
 
-void DataBroker::get_ass_data(uint32_t *ass)
+void DataBroker::get_aspd_data(uint32_t *aspd)
 {
-    *ass = mav->airspeed * 1000;  //  was m/s so now mm/s
+    *aspd = mav->airspeed * 1000;  //  was m/s so now mm/s
 
 }
 

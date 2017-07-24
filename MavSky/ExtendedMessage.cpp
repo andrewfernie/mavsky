@@ -92,20 +92,20 @@ uint16_t ExtendedMessage::telem_next_extension_word() {
         result = get_next_extension_word(0);
         last_was_text = 1;
     } else {
-        for(int i=1; i<16; i++) {   
+        for(int i=1; i<(MAX_EXTENDED_MSG+1); i++) {
           result = get_next_extension_word(extension_index);
           if((previous_extension_word_values_initialized == 0) || (result != previous_extension_word_values[extension_index]) || ((latest_extension_word_output_sequence[extension_index]+random(20,40)) < message_packet_sequence)) {    // last or will randomize synchronization so all don't occur at once
             previous_extension_word_values[extension_index] = result;
             latest_extension_word_output_sequence[extension_index] = message_packet_sequence;
             last_was_text = 0;
-            if(++extension_index > 15) { 
+            if(++extension_index > MAX_EXTENDED_MSG) {
                 extension_index = 1;  
                 message_packet_sequence++;   
                 previous_extension_word_values_initialized = 1;                                      
             }     
             break;
           } 
-          if(++extension_index > 15) { 
+          if(++extension_index > MAX_EXTENDED_MSG) {
               extension_index = 1;  
               message_packet_sequence++;   
               previous_extension_word_values_initialized = 1;                                      
@@ -194,7 +194,16 @@ uint16_t ExtendedMessage::get_next_extension_word(uint8_t extension_command) {
             break;   
         case 15:
             extension_data = mav->armed_bearing;        // 0-359
-            break;                                         
+            break;
+        case 16:
+            extension_data = mav->mission_current_seq;  // wp index
+            break;
+        case 17:
+            extension_data = mav->wp_brg;        // 0-359
+            break;
+        case 18:
+            extension_data = mav->wp_dist;        // m
+            break;
     }
     if(extension_data > 4095) {
       extension_data = 4095;
