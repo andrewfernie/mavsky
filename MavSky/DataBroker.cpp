@@ -37,6 +37,7 @@ DataBroker::DataBroker() {
   frsky->set_gps_request_callback(get_gps_data);
   frsky->set_rpm_request_callback(get_rpm_data);
   frsky->set_aspd_request_callback(get_aspd_data);
+  frsky->set_aspd_request_callback(get_nav_data);
   frsky->set_sp2uh_request_callback(get_sp2uh_data);
   frsky->set_sp2ur_request_callback(get_sp2ur_data);
 }
@@ -78,6 +79,12 @@ void DataBroker::get_rpm_data(uint32_t *rpm)
 void DataBroker::get_aspd_data(uint32_t *aspd)
 {
     *aspd = mav->airspeed * 1000;  //  was m/s so now mm/s
+
+}
+
+void DataBroker::get_nav_data(uint32_t *nav)
+{
+    *nav = mav->airspeed * 1000;  //  was m/s so now mm/s
 
 }
 

@@ -26,7 +26,7 @@
 #define SENSOR_ID_ID8               0x67 // 7  
 #define SENSOR_ID_ID9               0x48 // 8  
 #define SENSOR_ID_ID10              0xE9 // 9  
-#define SENSOR_ID_ASPD               0x6A // 10 airspeed sensor ASS-70, ASS-100
+#define SENSOR_ID_ASPD              0x6A // 10 airspeed sensor ASS-70, ASS-100
 #define SENSOR_ID_ID12              0xCB // 11 
 #define SENSOR_ID_ID13              0xAC // 12 
 #define SENSOR_ID_ID14              0x0D // 13 
@@ -35,7 +35,7 @@
 #define SENSOR_ID_ID17              0xD0 // 16 
 #define SENSOR_ID_ID18              0x71 // 17 
 #define SENSOR_ID_ID19              0xF2 // 18 
-#define SENSOR_ID_ID20              0x53 // 19 
+#define SENSOR_ID_NAV               0x53 // 19  synthetic sensor to transfer ardupilot nav data
 #define SENSOR_ID_ID21              0x34 // 20 
 #define SENSOR_ID_ID22              0x95 // 21 
 #define SENSOR_ID_ID23              0x16 // 22 
@@ -80,6 +80,10 @@
 
 #define FR_ID_AIR_SPEED_FIRST       0x0A00  //AIR_SPEED_FIRST_ID
 
+#define FR_ID_NAV_WPNUMBER          0x0B00  //NAV_WPNUMBER  -- this is a synthetic sensor
+#define FR_ID_NAV_WPDIST            0x0B10  //NAV_WPDIST    -- this is a synthetic sensor
+#define FR_ID_NAV_WPBRG             0x0B20  //NAV_WPBRG     -- this is a synthetic sensor
+
 #define FR_ID_RSSI                  0xF101  //used by the radio system
 #define FR_ID_ADC1                  0xF102  //ADC1_ID
 #define FR_ID_ADC2                  0xF103  //ADC2_ID                       
@@ -105,6 +109,7 @@ class FrSkySPort {
     uint32_t gps_heading = 0;  
     uint32_t rpm = 0;
     uint32_t aspd = 0;
+    uint32_t nav = 0;
     uint32_t sp2uh_fuel = 0;
     uint32_t sp2ur_accx = 0;
     uint32_t sp2ur_accy = 0;
@@ -113,8 +118,9 @@ class FrSkySPort {
     void (*fas_data_request_function)(uint32_t *voltage, uint32_t *current) = NULL;
     void (*gps_data_request_function)(int32_t *lon, int32_t *lat, int32_t *alt, uint32_t *speed, uint32_t *heading) = NULL;  
     void (*rpm_data_request_function)(uint32_t *rpm) = NULL; 
-	void (*aspd_data_request_function)(uint32_t *aspd) = NULL; 
-    void (*sp2uh_data_request_function)(uint32_t *fuel) = NULL; 
+    void(*aspd_data_request_function)(uint32_t *aspd) = NULL;
+    void(*nav_data_request_function)(uint32_t *nav) = NULL;
+    void (*sp2uh_data_request_function)(uint32_t *fuel) = NULL;
     void (*sp2ur_data_request_function)(uint32_t *accx, uint32_t *accy, uint32_t *accz) = NULL; 
 
 
@@ -134,6 +140,7 @@ class FrSkySPort {
     void set_gps_request_callback(void (*callback)(int32_t *lon, int32_t *lat, int32_t *alt, uint32_t *speed, uint32_t *heading));
     void set_rpm_request_callback(void(*callback)(uint32_t *rpm));
     void set_aspd_request_callback(void(*callback)(uint32_t *aspd));
+    void set_nav_request_callback(void(*callback)(uint32_t *aspd));
     void set_sp2uh_request_callback(void (*callback)(uint32_t *fuel));
     void set_sp2ur_request_callback(void (*callback)(uint32_t *accx, uint32_t *accy, uint32_t *accz));
 };

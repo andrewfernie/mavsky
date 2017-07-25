@@ -19,7 +19,7 @@
 #define TELEM_TEXT_MESSAGE_MAX                     128
 #define TELEM_NUM_BUFFERS                           16
 
-#define MAX_EXTENDED_MSG                            18      // maximum 0 based index of extended message data item
+#define MAX_EXTENDED_MSG                            15      // maximum 0 based index of extended message data item
 
 class ExtendedMessage {
   char telem_text_message_data_buffer[TELEM_NUM_BUFFERS][TELEM_TEXT_MESSAGE_MAX];

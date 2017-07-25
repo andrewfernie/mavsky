@@ -51,7 +51,8 @@ class Logger {
     static const byte TIMESTAMP_FRSKY_GPS                        = 15;
     static const byte TIMESTAMP_FRSKY_RPM                        = 16;
     static const byte TIMESTAMP_FRSKY_OTHER                      = 17;
-    static const byte TIMESTAMP_FRSKY_ASPD                        = 18;
+    static const byte TIMESTAMP_FRSKY_ASPD                       = 18;
+    static const byte TIMESTAMP_FRSKY_NAV                        = 18;
 
     static const byte LOG_MAV_HEARTBEAT       = 1;
     static const byte LOG_MAV_GPS             = 2;

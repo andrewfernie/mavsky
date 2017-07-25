@@ -34,7 +34,8 @@ extern MavConsole *console;    // todo probably not needed
 #define   DELAY_FAS_PERIOD             500
 #define   DELAY_GPS_PERIOD             500
 #define   DELAY_RPM_PERIOD             100
-#define   DELAY_ASPD_PERIOD             500
+#define   DELAY_ASPD_PERIOD            500
+#define   DELAY_NAV_PERIOD             500
 #define   DELAY_SP2UH_PERIOD           500
 #define   DELAY_SP2UR_PERIOD           500
 
@@ -87,8 +88,14 @@ void FrSkySPort::set_rpm_request_callback(void(*callback)(uint32_t *rpm)) {
     rpm_data_request_function = callback;
 };
 
-void FrSkySPort::set_aspd_request_callback(void(*callback)(uint32_t *aspd)) {
+void FrSkySPort::set_aspd_request_callback(void(*callback)(uint32_t *aspd))
+{
     aspd_data_request_function = callback;
+};
+
+void FrSkySPort::set_nav_request_callback(void(*callback)(uint32_t *nav))
+{
+    nav_data_request_function = callback;
 };
 
 void FrSkySPort::set_sp2uh_request_callback(void (*callback)(uint32_t *fuel)) {
@@ -107,6 +114,7 @@ void FrSkySPort::frsky_process_sensor_request(uint8_t sensorId) {
   static uint32_t delay_sp2uh_next = 0;
   static uint32_t delay_sp2ur_next = 0;
   static uint32_t delay_aspd_next = 0;
+  static uint32_t delay_nav_next = 0;
 
   uint32_t latlong = 0;
   
@@ -320,8 +328,39 @@ void FrSkySPort::frsky_process_sensor_request(uint8_t sensorId) {
           frsky_send_null(FR_ID_AIR_SPEED_FIRST);
         }  
         break;
+
+    case SENSOR_ID_NAV:
+        logger->add_timestamp(Logger::TIMESTAMP_FRSKY_NAV);
+        if (nav_data_request_function == NULL)
+        {
+            break;
+        }
+        if (process_timestamp > delay_nav_next)
+        {
+/*
+case 16:
+extension_data = mav->mission_current_seq;  // wp index
+break;
+case 17:
+extension_data = mav->wp_brg;        // 0-359
+break;
+case 18:
+extension_data = mav->wp_dist;        // m
+break;
+*/
+            nav_data_request_function(&nav);
+            frsky_send_package(FR_ID_NAV_WPNUMBER, aspd);
+            delay_aspd_next = process_timestamp + DELAY_NAV_PERIOD;
+        }
+        else
+        {
+            frsky_send_null(FR_ID_NAV_WPNUMBER);
+        }
+        break;
+
   }
 }
+
 
 void FrSkySPort::frsky_send_byte(uint8_t byte) {
   if(byte == 0x7E) {

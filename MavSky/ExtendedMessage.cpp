@@ -195,15 +195,7 @@ uint16_t ExtendedMessage::get_next_extension_word(uint8_t extension_command) {
         case 15:
             extension_data = mav->armed_bearing;        // 0-359
             break;
-        case 16:
-            extension_data = mav->mission_current_seq;  // wp index
-            break;
-        case 17:
-            extension_data = mav->wp_brg;        // 0-359
-            break;
-        case 18:
-            extension_data = mav->wp_dist;        // m
-            break;
+ 
     }
     if(extension_data > 4095) {
       extension_data = 4095;
