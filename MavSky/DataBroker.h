@@ -27,7 +27,7 @@ class DataBroker {
     static void get_gps_data(int32_t *lon, int32_t *lat, int32_t *alt, uint32_t *speed, uint32_t *heading);
     static void get_rpm_data(uint32_t *rpm);
     static void get_aspd_data(uint32_t *aspd);
-    static void get_nav_data(uint32_t *nav);
+    static void get_nav_data(uint32_t *wpnum, uint32_t *wpdist, int32_t *wpbrg);
     static void get_sp2uh_data(uint32_t *fuel);
     static void get_sp2ur_data(uint32_t *accx, uint32_t *accy, uint32_t *accz);
 

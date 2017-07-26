@@ -88,13 +88,11 @@ void FrSkySPort::set_rpm_request_callback(void(*callback)(uint32_t *rpm)) {
     rpm_data_request_function = callback;
 };
 
-void FrSkySPort::set_aspd_request_callback(void(*callback)(uint32_t *aspd))
-{
+void FrSkySPort::set_aspd_request_callback(void(*callback)(uint32_t *aspd)) {
     aspd_data_request_function = callback;
 };
 
-void FrSkySPort::set_nav_request_callback(void(*callback)(uint32_t *nav))
-{
+void FrSkySPort::set_nav_request_callback(void(*callback)(uint32_t *wpnum, uint32_t *wpdist, int32_t *wpbrg)) {
     nav_data_request_function = callback;
 };
 
@@ -335,26 +333,48 @@ void FrSkySPort::frsky_process_sensor_request(uint8_t sensorId) {
         {
             break;
         }
-        if (process_timestamp > delay_nav_next)
+        switch (nav_sensor_state)
         {
-/*
-case 16:
-extension_data = mav->mission_current_seq;  // wp index
-break;
-case 17:
-extension_data = mav->wp_brg;        // 0-359
-break;
-case 18:
-extension_data = mav->wp_dist;        // m
-break;
-*/
-            nav_data_request_function(&nav);
-            frsky_send_package(FR_ID_NAV_WPNUMBER, aspd);
-            delay_aspd_next = process_timestamp + DELAY_NAV_PERIOD;
-        }
-        else
-        {
-            frsky_send_null(FR_ID_NAV_WPNUMBER);
+        case 0:
+            if (process_timestamp > delay_nav_next)
+            {
+                nav_data_request_function(&nav_wpnum, &nav_wpdist, &nav_wpbrg);
+                frsky_send_package(FR_ID_NAV_WPNUMBER, nav_wpnum);
+                delay_nav_next = process_timestamp + DELAY_NAV_PERIOD;
+                nav_sensor_state = 1;
+            }
+            else
+            {
+                frsky_send_null(FR_ID_NAV_WPNUMBER);
+            }
+            break;
+        case 1:
+            if (process_timestamp > delay_nav_next)
+            {
+                frsky_send_package(FR_ID_NAV_WPDIST, nav_wpdist);
+                delay_nav_next = process_timestamp + DELAY_NAV_PERIOD;
+                nav_sensor_state = 2;
+            }
+            else
+            {
+                frsky_send_null(FR_ID_NAV_WPDIST);
+            }
+            break;
+        case 2:
+            if (process_timestamp > delay_nav_next)
+            {
+                frsky_send_package(FR_ID_NAV_WPBRG, nav_wpbrg);
+                delay_nav_next = process_timestamp + DELAY_NAV_PERIOD;
+                nav_sensor_state = 0;
+            }
+            else
+            {
+                frsky_send_null(FR_ID_NAV_WPBRG);
+            }
+            break;
+        default:
+            nav_sensor_state = 0;
+            break;
         }
         break;
 
