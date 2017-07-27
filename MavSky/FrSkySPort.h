@@ -80,15 +80,35 @@
 
 #define FR_ID_AIR_SPEED_FIRST       0x0A00  //AIR_SPEED_FIRST_ID
 
-#define FR_ID_NAV_WPNUMBER          0x0B00  //NAV_WPNUMBER  -- this is a synthetic sensor
-#define FR_ID_NAV_WPDIST            0x0B10  //NAV_WPDIST    -- this is a synthetic sensor
-#define FR_ID_NAV_WPBRG             0x0B20  //NAV_WPBRG     -- this is a synthetic sensor
+#define FR_ID_RBOX_BATT1_FIRST_ID   0x0b00
+#define FR_ID_RBOX_BATT1_LAST_ID    0x0b0f
+#define FR_ID_RBOX_BATT2_FIRST_ID   0x0b10
+#define FR_ID_RBOX_BATT2_LAST_ID    0x0b1f
+#define FR_ID_RBOX_STATE_FIRST_ID   0x0b20
+#define FR_ID_RBOX_STATE_LAST_ID    0x0b2f
+#define FR_ID_RBOX_CNSP_FIRST_ID    0x0b30
+#define FR_ID_RBOX_CNSP_LAST_ID     0x0b3f
+#define FR_ID_DIY_FIRST_ID          0x5000
+#define FR_ID_DIY_LAST_ID           0x52ff
+#define FR_ID_DIY_STREAM_FIRST_ID   0x5000
+#define FR_ID_DIY_STREAM_LAST_ID    0x50ff
+#define FR_ID_NAV_WPNUMBER          0x0c00  //NAV_WPNUMBER  -- this is a synthetic sensor
+#define FR_ID_NAV_WPDIST            0x0c10  //NAV_WPDIST    -- this is a synthetic sensor
+#define FR_ID_NAV_WPBRG             0x0c20  //NAV_WPBRG     -- this is a synthetic sensor
 
 #define FR_ID_RSSI                  0xF101  //used by the radio system
 #define FR_ID_ADC1                  0xF102  //ADC1_ID
 #define FR_ID_ADC2                  0xF103  //ADC2_ID                       
 #define FR_ID_BATT                  0xF104  // used by the radio system
 #define FR_ID_SWR                   0xF105  // used by the radio system
+
+#define FR_ID_SP2UART_A_ID          0xfd00
+#define FR_ID_SP2UART_B_ID          0xfd01
+#define FR_ID_XJT_VERSION_ID        0xf106
+#define FR_ID_FUEL_QTY_FIRST_ID     0x0a10
+#define FR_ID_FUEL_QTY_LAST_ID      0x0a1f
+
+
 
 class FrSkySPort {  
   private:
