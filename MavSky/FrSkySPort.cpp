@@ -363,7 +363,29 @@ void FrSkySPort::frsky_process_sensor_request(uint8_t sensorId) {
         case 2:
             if (process_timestamp > delay_nav_next)
             {
-                frsky_send_package(FR_ID_NAV_WPBRG, nav_wpbrg);
+                int32_t relative_bearing;
+                int32_t wp_bearing;
+                int32_t local_heading;
+
+                if (nav_wpbrg < 360) 
+                    wp_bearing = nav_wpbrg + 360;
+                else
+                    wp_bearing = nav_wpbrg;
+
+                if (gps_heading < 360) 
+                    local_heading = gps_heading + 360;
+                else
+                    local_heading = gps_heading;
+
+                relative_bearing = wp_bearing - local_heading;
+
+                if (relative_bearing > 180)
+                    relative_bearing = relative_bearing - 360;
+                else if (relative_bearing < -180)
+                    relative_bearing = relative_bearing + 360;
+
+
+                frsky_send_package(FR_ID_NAV_WPBRG, relative_bearing);
                 delay_nav_next = process_timestamp + DELAY_NAV_PERIOD;
                 nav_sensor_state = 0;
             }

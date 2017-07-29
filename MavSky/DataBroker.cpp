@@ -78,8 +78,7 @@ void DataBroker::get_rpm_data(uint32_t *rpm)
 
 void DataBroker::get_aspd_data(uint32_t *aspd)
 {
-    *aspd = mav->airspeed * 1000;  //  was m/s so now mm/s
-
+    *aspd = mav->airspeed * 10;  //  was m/s * 10 so now m/s
 }
 
 void DataBroker::get_nav_data(uint32_t *wpnum, uint32_t *wpdist, int32_t *wpbrg)
