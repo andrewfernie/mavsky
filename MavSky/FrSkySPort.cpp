@@ -373,9 +373,9 @@ void FrSkySPort::frsky_process_sensor_request(uint8_t sensorId) {
                     wp_bearing = nav_wpbrg;
 
                 if (gps_heading < 360) 
-                    local_heading = gps_heading + 360;
+                    local_heading = gps_heading/100 + 360;        // gps_heading scaled at 1/100 of a degree
                 else
-                    local_heading = gps_heading;
+                    local_heading = gps_heading/100;
 
                 relative_bearing = wp_bearing - local_heading;
 
