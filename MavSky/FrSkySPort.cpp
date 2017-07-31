@@ -282,21 +282,20 @@ void FrSkySPort::frsky_process_sensor_request(uint8_t sensorId) {
             sp2ur_data_request_function(&sp2ur_accx, &sp2ur_accy, &sp2ur_accz); 
             frsky_send_package(FR_ID_ACCX, sp2ur_accx); 
             delay_sp2ur_next = process_timestamp + DELAY_SP2UR_PERIOD;   
-            sp2ur_sensor_state = 0;
-//            sp2ur_sensor_state = 1;
+            sp2ur_sensor_state = 1;
           } else {
             frsky_send_null(FR_ID_ACCX);   
           }   
           break;
-//        case 1:
-//          if(process_timestamp > delay_sp2ur_next) {
-//            frsky_send_package(FR_ID_ACCY, sp2ur_accy); 
-//            delay_sp2ur_next = process_timestamp + DELAY_SP2UR_PERIOD;   
-//            sp2ur_sensor_state = 2;
-//          } else {
-//            frsky_send_null(FR_ID_ACCY);   
-//          }   
-//          break;            
+        case 1:
+          if(process_timestamp > delay_sp2ur_next) {
+            frsky_send_package(FR_ID_ACCY, sp2ur_accy); 
+            delay_sp2ur_next = process_timestamp + DELAY_SP2UR_PERIOD;   
+            sp2ur_sensor_state = 0;
+          } else {
+            frsky_send_null(FR_ID_ACCY);   
+          }   
+          break;            
 //        case 2:
 //          if(process_timestamp > delay_sp2ur_next) {
 //            frsky_send_package(FR_ID_ACCZ, sp2ur_accz); 

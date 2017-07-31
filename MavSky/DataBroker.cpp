@@ -94,7 +94,7 @@ void DataBroker::get_sp2uh_data(uint32_t *fuel) {
 
 void DataBroker::get_sp2ur_data(uint32_t *accx, uint32_t *accy, uint32_t *accz) {
   *accx = mav->average_rssi; 
-  *accy = 0;                  // unused
+  *accy = mav->heartbeat_type;          // to auto-detect vehicle type
   *accz = 0;                  // unused
 }
 
