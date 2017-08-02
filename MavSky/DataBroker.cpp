@@ -66,7 +66,7 @@ void DataBroker::get_gps_data(int32_t *lon, int32_t *lat, int32_t *alt, uint32_t
   *lon = mav->gps_longitude;
   *lat = mav->gps_latitude;
   *alt = mav->gps_altitude / 10;
-  *speed = mav->gps_speed * 10;             // was cm/s now mm/s
+  *speed = mav->gps_speed * 1.94384 * 10;             // was cm/s now knots * 1000 
   *heading = mav->heading * 100;            // 10000 = 100 deg   
 }
 
@@ -78,7 +78,7 @@ void DataBroker::get_rpm_data(uint32_t *rpm)
 
 void DataBroker::get_aspd_data(uint32_t *aspd)
 {
-    *aspd = mav->airspeed * 10;  //  was m/s * 10 so now m/s
+    *aspd = mav->airspeed * 1.94384 * 10;  //  convert from m/s to knots (1.94384) then to knots * 10
 }
 
 void DataBroker::get_nav_data(uint32_t *wpnum, uint32_t *wpdist, int32_t *wpbrg)
