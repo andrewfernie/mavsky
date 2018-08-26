@@ -35,7 +35,7 @@ extern MavConsole *console;    // todo probably not needed
 #define   DELAY_GPS_PERIOD             500
 #define   DELAY_RPM_PERIOD             100
 #define   DELAY_ASPD_PERIOD            500
-#define   DELAY_NAV_PERIOD             500
+//NAV #define   DELAY_NAV_PERIOD             500
 #define   DELAY_SP2UH_PERIOD           500
 #define   DELAY_SP2UR_PERIOD           500
 
@@ -92,9 +92,12 @@ void FrSkySPort::set_aspd_request_callback(void(*callback)(uint32_t *aspd)) {
     aspd_data_request_function = callback;
 };
 
+//NAV
+/*
 void FrSkySPort::set_nav_request_callback(void(*callback)(uint32_t *wpnum, uint32_t *wpdist, int32_t *wpbrg)) {
     nav_data_request_function = callback;
 };
+*/
 
 void FrSkySPort::set_sp2uh_request_callback(void (*callback)(uint32_t *fuel)) {
   sp2uh_data_request_function = callback;
@@ -112,7 +115,7 @@ void FrSkySPort::frsky_process_sensor_request(uint8_t sensorId) {
   static uint32_t delay_sp2uh_next = 0;
   static uint32_t delay_sp2ur_next = 0;
   static uint32_t delay_aspd_next = 0;
-  static uint32_t delay_nav_next = 0;
+//NAV  static uint32_t delay_nav_next = 0;
 
   uint32_t latlong = 0;
   
@@ -325,7 +328,8 @@ void FrSkySPort::frsky_process_sensor_request(uint8_t sensorId) {
           frsky_send_null(FR_ID_AIR_SPEED_FIRST);
         }  
         break;
-
+//NAV
+/*
     case SENSOR_ID_NAV:
         logger->add_timestamp(Logger::TIMESTAMP_FRSKY_NAV);
         if (nav_data_request_function == NULL)
@@ -398,6 +402,7 @@ void FrSkySPort::frsky_process_sensor_request(uint8_t sensorId) {
             break;
         }
         break;
+*/
 
   }
 }

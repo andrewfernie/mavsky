@@ -362,7 +362,7 @@ void MavLinkData::process_mavlink_packets() {
 
         case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT:          
           wp_dist = mavlink_msg_nav_controller_output_get_wp_dist(&msg);
-          wp_brg = mavlink_msg_nav_controller_output_get_target_bearing(&msg);
+//NAV           wp_brg = mavlink_msg_nav_controller_output_get_target_bearing(&msg);
           logger->debug_print(Logger::LOG_MAV_OTHER, (char *)"MAVLINK MSG_ID_NAV_CONTROLLER_OUTPUT");
           logger->add_timestamp(Logger::TIMESTAMP_MAVLINK_MSG_ID_CONTROLLER_OUTPUT);
           break;
