@@ -54,6 +54,12 @@
     <ClCompile Include="OctoWS2811.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Average.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrSkySPortPassthru.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataBroker.h">
