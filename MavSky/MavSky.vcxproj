@@ -93,9 +93,11 @@
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MavConsole.cpp" />
     <ClCompile Include="MavLinkData.cpp" />
+    <ClCompile Include="MavlinkToPassthruPlus.cpp" />
     <ClCompile Include="OctoWS2811.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Average.h" />
     <ClInclude Include="DataBroker.h">
       <FileType>CppCode</FileType>
     </ClInclude>
@@ -111,6 +113,7 @@
     <ClInclude Include="FrSkySPort.h">
       <FileType>CppCode</FileType>
     </ClInclude>
+    <ClInclude Include="FrSkySPortPassthru.h" />
     <ClInclude Include="Led.h">
       <FileType>CppCode</FileType>
     </ClInclude>
@@ -129,6 +132,7 @@
     <ClInclude Include="MavLinkData.h">
       <FileType>CppCode</FileType>
     </ClInclude>
+    <ClInclude Include="MavlinkToPassthruPlus.h" />
     <ClInclude Include="MavSky.h">
       <FileType>CppCode</FileType>
     </ClInclude>

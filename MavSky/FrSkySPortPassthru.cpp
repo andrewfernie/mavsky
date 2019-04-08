@@ -1,19 +1,7 @@
-     
-// Frsky variables     
-short    crc;                         // of frsky-packet
-uint8_t  time_slot_max = 16;              
-uint32_t time_slot = 1;
-float a, az, c, dis, dLat, dLon;
-uint8_t sv_count = 0;
+#include "FrSkySPortPassthru.h"
+#include "Average.h"
 
-#if (Target_Board == 0) // Teensy3x
-volatile uint8_t *uartC3;
-enum SPortMode { RX = 0, TX = 1 };
-SPortMode mode, modeNow;
-
-void setSPortMode(SPortMode mode);
-
-void setSPortMode(SPortMode mode) {   // To share single wire on TX pin
+void FrSkySPortPassthru::setSPortMode(SPortMode mode) {   // To share single wire on TX pin
 
   if(mode == TX && modeNow !=TX) {
     *uartC3 |= 0x20;                 // Switch S.Port into send mode
@@ -30,10 +18,10 @@ void setSPortMode(SPortMode mode) {   // To share single wire on TX pin
     #endif
   }
 }
-#endif
+
 
 // ***********************************************************************
-void FrSkySPort_Init(void)  {
+void FrSkySPortPassthru::FrSkySPort_Init(void)  {
 
  frSerial.begin(frBaud); 
 
@@ -58,7 +46,7 @@ void FrSkySPort_Init(void)  {
 // ***********************************************************************
 
 #if defined Air_Mode || defined Relay_Mode
-void ReadSPort(void) {
+void FrSkySPortPassthru::ReadSPort(void) {
   uint8_t prevByt=0;
   #if (Target_Board == 0) // Teensy3x
     setSPortMode(RX);
@@ -86,7 +74,7 @@ void ReadSPort(void) {
 // ***********************************************************************
 
 #if defined Ground_Mode
-void Emulate_ReadSPort() {
+void FrSkySPortPassthru::Emulate_ReadSPort() {
   #if (Target_Board == 0)      // Teensy3x
   setSPortMode(TX);
   #endif
@@ -99,7 +87,7 @@ void Emulate_ReadSPort() {
 #endif
 // ***********************************************************************
 
-void FrSkySPort_Process() {
+void FrSkySPortPassthru::FrSkySPort_Process() {
 
   #ifdef Frs_Debug_All
     ShowPeriod();   
@@ -273,7 +261,7 @@ void FrSkySPort_Process() {
 
  }     
 // ***********************************************************************
-void FrSkySPort_SendByte(uint8_t byte, bool addCrc) {
+void FrSkySPortPassthru::FrSkySPort_SendByte(uint8_t byte, bool addCrc) {
   #if (Target_Board == 0)      // Teensy3x
    setSPortMode(TX); 
  #endif  
@@ -292,7 +280,7 @@ void FrSkySPort_SendByte(uint8_t byte, bool addCrc) {
 	crc &= 0x00ff;
 }
 // ***********************************************************************
-void CheckByteStuffAndSend(uint8_t byte) {
+void FrSkySPortPassthru::CheckByteStuffAndSend(uint8_t byte) {
  if (byte == 0x7E) {
    frSerial.write(0x7D);
    frSerial.write(0x5E);
@@ -304,7 +292,7 @@ void CheckByteStuffAndSend(uint8_t byte) {
    }
 }
 // ***********************************************************************
-void FrSkySPort_SendCrc() {
+void FrSkySPortPassthru::FrSkySPort_SendCrc() {
   uint8_t byte;
   byte = 0xFF-crc;
 
@@ -315,7 +303,7 @@ void FrSkySPort_SendCrc() {
   crc = 0;          // CRC reset
 }
 //***************************************************
-void FrSkySPort_SendDataFrame(uint8_t Instance, uint16_t Id, uint32_t value) {
+void FrSkySPortPassthru::FrSkySPort_SendDataFrame(uint8_t Instance, uint16_t Id, uint32_t value) {
 
   #if (Target_Board == 0)      // Teensy3x
   setSPortMode(TX); 
@@ -361,18 +349,18 @@ void FrSkySPort_SendDataFrame(uint8_t Instance, uint16_t Id, uint32_t value) {
    
 }
 //***************************************************
-  uint32_t bit32Extract(uint32_t dword,uint8_t displ, uint8_t lth) {
+  uint32_t FrSkySPortPassthru::bit32Extract(uint32_t dword,uint8_t displ, uint8_t lth) {
   uint32_t r = (dword & createMask(displ,(displ+lth-1))) >> displ;
   return r;
 }
 //***************************************************
 // Mask then AND the shifted bits, then OR them to the payload
-  void bit32Pack(uint32_t dword ,uint8_t displ, uint8_t lth) {   
+  void FrSkySPortPassthru::bit32Pack(uint32_t dword ,uint8_t displ, uint8_t lth) {
   uint32_t dw_and_mask =  (dword<<displ) & (createMask(displ, displ+lth-1)); 
   fr_payload |= dw_and_mask; 
 }
 //***************************************************
-uint32_t createMask(uint8_t lo, uint8_t hi) {
+uint32_t FrSkySPortPassthru::createMask(uint8_t lo, uint8_t hi) {
   uint32_t r = 0;
   for (unsigned i=lo; i<=hi; i++)
        r |= 1 << i;  
@@ -380,7 +368,7 @@ uint32_t createMask(uint8_t lo, uint8_t hi) {
 }
 // *****************************************************************
 
-void SendLat800() {
+void FrSkySPortPassthru::SendLat800() {
   if (fr_gps_status < 3) return;
   fr_lat = Abs(ap_lat) / 100 * 6;  // ap_lat * 60 / 1000
   if (ap_lat<0) 
@@ -401,7 +389,7 @@ void SendLat800() {
   FrSkySPort_SendDataFrame(0x1B, 0x800, fr_payload);  
 }
 // *****************************************************************
-void SendLon800() {
+void FrSkySPortPassthru::SendLon800() {
   if (fr_gps_status < 3) return;
   fr_lon = Abs(ap_lon) * 0.06;   // ap_lon * 60 / 1000
   if (ap_lon<0) 
@@ -420,7 +408,7 @@ void SendLon800() {
   FrSkySPort_SendDataFrame(0x1B, 0x800, fr_payload); 
 }
 // *****************************************************************
-void SendStatusTextChunk5000() {
+void FrSkySPortPassthru::SendStatusTextChunk5000() {
 
   if (fr_chunk_pntr == 0) { 
     ST_record = (MsgRingBuff.shift());  // Get a status text message from front of queue
@@ -501,7 +489,7 @@ void SendStatusTextChunk5000() {
 }
 
 // *****************************************************************
-void SendAP_Status5001() {
+void FrSkySPortPassthru::SendAP_Status5001() {
   if (ap_type == 6) return;      // If GCS heartbeat ignore it  -  yaapu  - ejs also handled at #0 read
   
   fr_simple = ap_simple;         // Derived from "ALR SIMPLE mode on/off" text messages
@@ -535,7 +523,7 @@ void SendAP_Status5001() {
   FrSkySPort_SendDataFrame(0x1B, 0x5001, fr_payload);  
 }
 // *****************************************************************
-void Send_GPS_Status5002() {
+void FrSkySPortPassthru::Send_GPS_Status5002() {
 
   if (ap_sat_visible > 15)
     fr_numsats = 15;
@@ -578,7 +566,7 @@ void Send_GPS_Status5002() {
 
 }
 // *****************************************************************  
-void Send_Bat1_5003() {
+void FrSkySPortPassthru::Send_Bat1_5003() {
   
   fr_bat1_volts = ap_voltage_battery1 / 100;         // Were mV, now dV  - V * 10
   fr_bat1_amps = ap_current_battery1 ;               // Remain       dA  - A * 10   
@@ -601,7 +589,7 @@ void Send_Bat1_5003() {
   FrSkySPort_SendDataFrame(0x1B, 0x5003, fr_payload);           
 }
 // ***************************************************************** 
-void Send_Home_5004() {
+void FrSkySPortPassthru::Send_Home_5004() {
   if (fr_gps_status < 3) return;
 
     lon1=hom.lon/180*PI;  // degrees to radians
@@ -654,7 +642,7 @@ void Send_Home_5004() {
 }
 
 // *****************************************************************
-void Send_VelYaw_5005() {
+void FrSkySPortPassthru::Send_VelYaw_5005() {
   
   fr_vy = ap_hud_climb * 10;   // from #74   m/s to dm/s;
   fr_vx = ap_hud_grd_spd * 10;  // from #74  m/s to dm/s
@@ -690,7 +678,7 @@ void Send_VelYaw_5005() {
   FrSkySPort_SendDataFrame(0x1B, 0x5005,fr_payload);
 }
 // *****************************************************************  
-void Send_Atti_5006() {
+void FrSkySPortPassthru::Send_Atti_5006() {
   fr_roll = (ap_roll * 5) + 900;             //  -- fr_roll units = [0,1800] ==> [-180,180]
   fr_pitch = (ap_pitch * 5) + 450;           //  -- fr_pitch units = [0,900] ==> [-90,90]
   fr_range = 0;   
@@ -708,7 +696,7 @@ void Send_Atti_5006() {
   FrSkySPort_SendDataFrame(0x1B, 0x5006,fr_payload);      
 }
 //***************************************************
-void SendParameters5007() {
+void FrSkySPortPassthru::SendParameters5007() {
 
   if (paramsID >= 6) {
     fr_paramsSent = true;          // get this done early on and then regularly thereafter
@@ -790,7 +778,7 @@ void SendParameters5007() {
     }  
 }
 // ***************************************************************** 
-void Send_Bat2_5008() {
+void FrSkySPortPassthru::Send_Bat2_5008() {
   
    fr_bat2_volts = ap_voltage_battery1 / 100;         // Were mV, now dV  - V * 10
    fr_bat2_amps = ap_current_battery1 ;               // Remain       dA  - A * 10   
@@ -816,7 +804,7 @@ void Send_Bat2_5008() {
 
 // ***************************************************************** 
 
-void Send_WayPoint_5009() {
+void FrSkySPortPassthru::Send_WayPoint_5009() {
 
   fr_ms_seq = ap_ms_seq;                                      // Current WP seq number, wp[0] = wp1, from regular #42
   
@@ -866,7 +854,7 @@ void Send_WayPoint_5009() {
 }
 
 // *****************************************************************  
-void Send_Servo_Raw_50F1() {
+void FrSkySPortPassthru::Send_Servo_Raw_50F1() {
 uint8_t sv_chcnt = 8;
   if (sv_count+4 > sv_chcnt) { // 4 channels at a time
     sv_count = 0;
@@ -919,7 +907,7 @@ uint8_t sv_chcnt = 8;
   sv_count += 4; 
 }
 // *****************************************************************  
-void Send_VFR_Hud_50F2() {
+void FrSkySPortPassthru::Send_VFR_Hud_50F2() {
  
   fr_air_spd = ap_hud_air_spd * 10;      // from #74  m/s to dm/s
   fr_throt = ap_hud_throt;               // 0 - 100%
@@ -948,11 +936,11 @@ void Send_VFR_Hud_50F2() {
         
 }
 // *****************************************************************  
-void Send_Wind_Estimate_50F3() {
+void FrSkySPortPassthru::Send_Wind_Estimate_50F3() {
 
 }
 // *****************************************************************          
-void SendRssiF101() {          // data id 0xF101 RSSI tell LUA script in Taranis we are connected
+void FrSkySPortPassthru::SendRssiF101() {          // data id 0xF101 RSSI tell LUA script in Taranis we are connected
 
   if (rssiGood)
     //fr_rssi = (ap_chan16_raw - 1000)  / 10;  //  RSSI uS 1000=0%  2000=100%
@@ -979,7 +967,7 @@ void SendRssiF101() {          // data id 0xF101 RSSI tell LUA script in Taranis
   #endif
 }
 //*************************************************** 
-int8_t PWM_To_63(uint16_t PWM) {       // PWM 1000 to 2000   ->    nominal -63 to 63
+int8_t FrSkySPortPassthru::PWM_To_63(uint16_t PWM) {       // PWM 1000 to 2000   ->    nominal -63 to 63
 int8_t myint;
   myint = round((PWM - 1500) * 0.126); 
   myint = myint < -63 ? -63 : myint;            
@@ -988,14 +976,14 @@ int8_t myint;
 }
 
 //***************************************************  
-uint32_t Abs(int32_t num) {
+uint32_t FrSkySPortPassthru::Abs(int32_t num) {
   if (num<0) 
     return (num ^ 0xffffffff) + 1;
   else
     return num;  
 }
 //***************************************************  
-float Distance(Loc2D loc1, Loc2D loc2) {
+float FrSkySPortPassthru::Distance(Loc2D loc1, Loc2D loc2) {
 float a, c, d, dLat, dLon;  
 
   loc1.lat=loc1.lat/180*PI;  // degrees to radians
@@ -1011,7 +999,7 @@ float a, c, d, dLat, dLon;
   return d;
 }
 //*************************************************** 
-float Azimuth(Loc2D loc1, Loc2D loc2) {
+float FrSkySPortPassthru::Azimuth(Loc2D loc1, Loc2D loc2) {
 // Calculate azimuth bearing from loc1 to loc2
 float a, az; 
 
@@ -1028,7 +1016,7 @@ float a, az;
 }
 //***************************************************
 //Add two bearing in degrees and correct for 360 boundary
-int16_t Add360(int16_t arg1, int16_t arg2) {  
+int16_t FrSkySPortPassthru::Add360(int16_t arg1, int16_t arg2) {
   int16_t ret = arg1 + arg2;
   if (ret < 0) ret += 360;
   if (ret > 359) ret -= 360;
@@ -1036,7 +1024,7 @@ int16_t Add360(int16_t arg1, int16_t arg2) {
 }
 //***************************************************
 // Correct for 360 boundary - yaapu
-float wrap_360(int16_t angle)
+float FrSkySPortPassthru::wrap_360(int16_t angle)
 {
     const float ang_360 = 360.f;
     float res = fmodf(static_cast<float>(angle), ang_360);
@@ -1047,7 +1035,7 @@ float wrap_360(int16_t angle)
 }
 //***************************************************
 // From Arducopter 3.5.5 code
-uint16_t prep_number(int32_t number, uint8_t digits, uint8_t power)
+uint16_t FrSkySPortPassthru::prep_number(int32_t number, uint8_t digits, uint8_t power)
 {
     uint16_t res = 0;
     uint32_t abs_number = abs(number);
@@ -1123,7 +1111,7 @@ uint16_t prep_number(int32_t number, uint8_t digits, uint8_t power)
 }  
 /*
  * // ***************************************************************** 
-void Send_RC_5009() {
+void FrSkySPortPassthru::Send_RC_5009() {
   ap_chcnt = ap_chcnt > 16 ? 16 : ap_chcnt;  // cap number of channels at 16 for now
   if (rc_count+4 > ap_chcnt) { // 4 channels at a time
     rc_count = 0;

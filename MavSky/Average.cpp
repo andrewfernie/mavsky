@@ -1,4 +1,4 @@
-
+#include "Average.h"
 
 uint32_t Get_Volt_Average1(uint16_t mV)  {
 

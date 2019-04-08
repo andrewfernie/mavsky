@@ -60,6 +60,9 @@
     <ClCompile Include="FrSkySPortPassthru.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MavlinkToPassthruPlus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataBroker.h">
@@ -102,6 +105,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="__vm\.MavSky.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Average.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrSkySPortPassthru.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MavlinkToPassthruPlus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

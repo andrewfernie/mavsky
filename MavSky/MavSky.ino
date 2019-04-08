@@ -40,7 +40,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 #include <GCS_MAVLink.h>
 #include <EEPROM.h>
 #include "MavSky.h"
@@ -51,6 +50,124 @@
 #include "DataBroker.h"
 
 #include "Led.h"
+
+//************************************* Please select your options here before compiling **************************
+// Choose one (only) of these target boards
+#define Target_Board   0      // Teensy 3.x              Un-comment this line if you are using a Teensy 3.x
+//#define Target_Board   1      // Blue Pill STM32F103C    OR un-comment this line if you are using a Blue Pill STM32F103C
+//#define Target_Board   2      // Maple_Mini STM32F103C   OR un-comment this line if you are using a Maple_Mini STM32F103C
+
+// Choose one (only) of these three modes
+#define Ground_Mode          // Converter between Taranis and LRS tranceiver (like Orange)
+//#define Air_Mode             // Converter between FrSky receiver (like XRS) and Flight Controller (like Pixhawk)
+//#define Relay_Mode           // Converter between LRS tranceiver (like Orange) and FrSky receiver (like XRS) in relay box on the ground
+
+//#define Battery_mAh_Source  1  // Get battery mAh from the FC - note both RX and TX lines must be connected      
+//#define Battery_mAh_Source  2  // Define bat1_capacity and bat2_capacity below and use those 
+#define Battery_mAh_Source  3  // Define battery mAh in the LUA script on the Taranis/Horus - Recommended
+#define SPort_Serial   1    // The default is Serial 1, but 3 is possible if we don't want aux port
+
+//#define Aux_Port_Enabled            // For BlueTooth or other auxilliary serial passthrough
+//#define Request_Missions_From_FC    // Un-comment if you need mission waypoint from FC - NOT NECESSARY RIGHT NOW
+#define Request_Mission_Count_From_FC // Needed for yaapu's mission/waypoint script
+//#define QLRS                        // Un-comment this line only if you are using the QLRS telemetry system
+
+const uint16_t bat1_capacity = 5200;
+const uint16_t bat2_capacity = 0;
+
+
+
+//*** LEDS ********************************************************************************************************
+//uint16_t MavStatusLed = 13; 
+uint8_t MavLedState = LOW;
+uint16_t BufStatusLed = 12;
+uint8_t BufLedState = LOW;
+
+#if (Target_Board == 0) // Teensy3x
+#define MavStatusLed  13
+#elif (Target_Board == 1) // Blue Pill
+#define MavStatusLed  PC13
+#elif (Target_Board == 2) //  Maple Mini
+#define MavStatusLed  33  // PB1
+#endif
+//********************************************************* 
+#if (Target_Board == 1) // Blue Pill
+#if defined Aux_Port_Enabled       
+#error Blue Pill board does not have enough UARTS for Auxilliary port. Un-comment #define Aux_Port_Enabled.
+#endif
+#endif
+
+#if (Target_Board == 1) // Blue Pill
+#if (SPort_Serial  == 3)    
+#error Blue Pill board does not have Serial3. This configuration is not possible.
+#endif
+#endif
+
+#define Debug               Serial         // USB 
+#define frBaud              57600          // Use 57600
+#define mavSerial           Serial2        
+#define mavBaud             57600   
+
+#if (SPort_Serial == 1) 
+#define frSerial              Serial1        // S.Port 
+#elif (SPort_Serial == 3)
+#define frSerial            Serial3        // S.Port 
+#else
+#error SPort_Serial can only be 1 or 3. Please correct.
+#endif  
+
+#if defined Aux_Port_Enabled
+#if (SPort_Serial == 3) 
+#error Aux port and SPort both configured for Serial3. Please correct.
+#else 
+#define auxSerial             Serial3        // Mavlink telemetry to and from auxilliary adapter     
+#define auxBaud               57600          // Use 57600
+#define auxDuplex                            // Pass aux <-> FC traffic up and down, else only down from FC
+#endif
+#endif
+
+//#define Frs_Dummy_rssi       // For LRS testing only - force valid rssi. NOTE: If no rssi FlightDeck or other script won't connect!
+//#define Data_Streams_Enabled // Rather set SRn in Mission Planner
+
+#define Max_Waypoints  256     // Note. This is a RAM trade-off. If exceeded then Debug message and shut down
+
+// Debugging options below ***************************************************************************************
+#define Mav_Debug_All
+//#define Frs_Debug_All
+//#define Frs_Debug_Payload
+//#define Mav_Debug_RingBuff
+//#define Debug_Air_Mode
+//#define Mav_List_Params
+//#define Aux_Debug_Params
+//#define Aux_Port_Debug
+//#define Mav_Debug_Params
+//#define Frs_Debug_Params
+//#define Mav_Debug_Servo
+//#define Frs_Debug_Servo
+//#define Mav_Debug_Rssi
+//#define Mav_Debug_RC
+//#define Frs_Debug_RC
+//#define Mav_Debug_Heartbeat
+//#define Mav_Debug_SysStatus
+//#define Frs_Debug_LatLon
+//#define Frs_Debug_APStatus
+//#define Debug_Batteries
+//#define Frs_Debug_Home
+//#define Mav_Debug_GPS_Raw     // #24
+//#define Mav_Debug_GPS_Int     // #33
+//#define Frs_Debug_YelYaw
+//#define Frs_Debug_GPS_Status
+//#define Mav_Debug_Raw_IMU
+//#define Mav_Debug_Hud
+//#define Frs_Debug_Hud
+//#define Mav_Debug_Scaled_Pressure
+//#define Mav_Debug_Attitude
+//#define Frs_Debug_Attitude
+//#define Mav_Debug_Text
+//#define Frs_Debug_Text    
+//#define Mav_Debug_Mission 
+//#define Frs_Debug_Mission              
+//*****************************************************************************************************************
 
 #define LEDPIN          13
 #define PROBEPIN        12
